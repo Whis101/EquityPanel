@@ -1,0 +1,31 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+
+# Virtual environment
+.venv/
+
+# Secrets
+.env
+
+# Tool caches
+.pytest_cache/
+.ruff_cache/
+.coverage
+coverage.xml
+htmlcov/
+
+# Data (never commit)
+data/raw/
+data/processed/
+*.csv
+*.parquet
+
+# Editors / OS
+.vscode/
+.idea/
+Thumbs.db
+.DS_Store
