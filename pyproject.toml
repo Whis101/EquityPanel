@@ -41,5 +41,5 @@ select = ["E", "F", "W", "I", "B", "UP", "SIM", "NPY", "PD"]
 testpaths = ["tests"]
 addopts = "-ra --strict-markers"
 markers = [
-    "real_data: needs the real UCI/Synthea files in data/raw (skipped in CI)",
+    "real_data: needs the real UCI/Synthea files in data/raw",
 ]
