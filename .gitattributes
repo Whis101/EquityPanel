@@ -1,0 +1,7 @@
+# Store text files with LF in the repo; each OS checks out its own line endings.
+* text=auto
+
+# Never touch line endings in these.
+*.zip binary
+*.png binary
+*.parquet binary
