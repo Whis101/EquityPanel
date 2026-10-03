@@ -1,4 +1,4 @@
-"""Tests for equitypanel.data.schema: the cohort-frame and audit-frame contracts."""
+"""Tests for equitypanel.data.schema: the cohort, audit and lab frame contracts."""
 
 import numpy as np
 import pandas as pd
@@ -10,6 +10,7 @@ from equitypanel.data.schema import (
     SchemaError,
     validate_audit_frame,
     validate_cohort_frame,
+    validate_lab_frame,
 )
 
 GROUP_COLS = ["race", "sex", "age_band"]
@@ -43,6 +44,21 @@ def audit() -> pd.DataFrame:
             "race": ["Black", "White", "Unknown", "Hispanic"],
             "sex": ["Female", "Male", "Unknown", "Female"],
             "age_band": ["<50", "50-59", "70-79", "80+"],
+        }
+    )
+
+
+@pytest.fixture
+def lab() -> pd.DataFrame:
+    """A small, valid lab frame: adults with an exact age and a creatinine value."""
+    return pd.DataFrame(
+        {
+            "patient_id": ["a", "b", "c", "d"],
+            "race": ["Black", "White", "Asian", "Native"],
+            "sex": ["Female", "Male", "Male", "Female"],
+            "age_band": ["<50", "50-59", "70-79", "80+"],
+            "age": [18.0, 55.2, 71.9, 88.4],
+            "creatinine_mg_dl": [0.7, 1.1, 2.4, 0.9],
         }
     )
 
@@ -207,3 +223,75 @@ def test_small_groups_are_not_rejected(audit):
     # Every group here has 1-2 patients. Schema checks validity; metrics/ warns
     # about reliability (groups under 30), so small groups must pass here.
     validate_audit_frame(audit, GROUP_COLS)
+
+
+# ---------------------------------------------------------------- lab frame
+
+
+def test_valid_lab_is_returned_as_the_same_object(lab):
+    assert validate_lab_frame(lab) is lab
+
+
+def test_lab_is_not_mutated(lab):
+    before = lab.copy()
+    validate_lab_frame(lab)
+    pd.testing.assert_frame_equal(lab, before)
+
+
+def test_empty_lab_is_rejected(lab):
+    with pytest.raises(SchemaError, match="empty"):
+        validate_lab_frame(lab.iloc[0:0])
+
+
+@pytest.mark.parametrize(
+    "col", ["patient_id", "race", "sex", "age_band", "age", "creatinine_mg_dl"]
+)
+def test_lab_missing_required_column_is_rejected(lab, col):
+    with pytest.raises(SchemaError, match=col):
+        validate_lab_frame(lab.drop(columns=col))
+
+
+def test_lab_duplicate_patient_id_is_rejected(lab):
+    lab["patient_id"] = ["a", "a", "c", "d"]
+    with pytest.raises(SchemaError, match="patient_id"):
+        validate_lab_frame(lab)
+
+
+@pytest.mark.parametrize("bad", [17.9, np.nan, "60"])
+def test_lab_age_must_be_an_adult_number(lab, bad):
+    # The CKD-EPI eGFR equations are only defined for adults (18+).
+    lab["age"] = [18.0, 55.2, 71.9, bad]
+    with pytest.raises(SchemaError, match="age"):
+        validate_lab_frame(lab)
+
+
+@pytest.mark.parametrize("bad", [0.0, -1.0, np.nan, "1.2"])
+def test_lab_creatinine_must_be_a_positive_number(lab, bad):
+    # eGFR takes the log of creatinine, so zero or negative values would crash it.
+    lab["creatinine_mg_dl"] = [0.7, 1.1, 2.4, bad]
+    with pytest.raises(SchemaError, match="creatinine_mg_dl"):
+        validate_lab_frame(lab)
+
+
+@pytest.mark.parametrize("col", GROUP_COLS)
+def test_lab_nan_in_group_column_is_rejected(lab, col):
+    with pytest.raises(SchemaError, match=col):
+        validate_lab_frame(blank_first_row(lab, col))
+
+
+def test_lab_unknown_age_band_is_rejected(lab):
+    lab["age_band"] = ["<50", "50-59", "70-79", "90+"]
+    with pytest.raises(SchemaError, match="age_band"):
+        validate_lab_frame(lab)
+
+
+def test_lab_unknown_sex_value_is_rejected(lab):
+    lab["sex"] = ["Female", "Male", "Male", "F"]
+    with pytest.raises(SchemaError, match="sex"):
+        validate_lab_frame(lab)
+
+
+def test_lab_needs_no_outcome_column(lab):
+    # A lab frame feeds the eGFR formulas, not a model audit, so there is no y_true.
+    assert "y_true" not in lab.columns
+    validate_lab_frame(lab)
