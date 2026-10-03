@@ -1,10 +1,16 @@
 # EquityPanel
 
+[![CI](https://github.com/Whis101/EquityPanel/actions/workflows/ci.yml/badge.svg)](https://github.com/Whis101/EquityPanel/actions/workflows/ci.yml)
+
 A Python package for auditing clinical risk models for performance gaps across
 demographic groups (race, sex, age band).
 
 > **Work in progress.** Milestone 1 (scaffold and data layer) is under way.
 > Most of the features below are planned, not built yet. See [Status](#status).
+
+> **Not a clinical tool.** EquityPanel is an auditing aid for research and
+> education. Run it only on public or synthetic data, never on real patient
+> data, and do not use its output to make decisions about individual patients.
 
 ## Goal
 
@@ -27,7 +33,8 @@ overall accuracy number. Planned pieces:
 |---|---|
 | Package scaffold, tooling (pytest, Ruff), MIT license | Done |
 | Schema validation for cohort and audit frames (`equitypanel.data.schema`) | Done, with tests |
-| Dataset loaders | Next |
+| UCI diabetes loader (`equitypanel.data.uci`) | Done, with tests |
+| Synthea loader (creatinine, for eGFR) | Next |
 | Metrics, thresholds, reclassification, report | Planned |
 
 ## Data
@@ -47,6 +54,7 @@ Requires Python 3.11+.
     pip install -e ".[dev]"
     pytest
     ruff check .
+    ruff format --check .
 
 ## License
 
