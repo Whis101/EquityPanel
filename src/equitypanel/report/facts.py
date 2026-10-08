@@ -3,6 +3,9 @@
 This is the only input the LLM summary ever sees. It holds aggregate numbers (group
 sizes, metrics, confidence intervals), never patient rows. IDs look like
 "race.Black.fnr", "model.auc_test" or "egfr.Black.waitlist_le20_2021".
+
+Aggregates are not automatically de-identified: a group of 2 patients reveals their
+outcomes. suppress_small_cells() removes small groups before anything is sent out.
 """
 
 import math
@@ -12,6 +15,7 @@ import pandas as pd
 from equitypanel.reclassification.reclassify import RACE_TERM_COL
 
 DECIMALS = 4  # facts are rounded so the LLM and the checker see the same numbers
+MIN_CELL = 11  # CMS small-cell convention: never release counts of 1-10
 
 METRIC_LABELS = {
     "n": "patients",
@@ -90,14 +94,13 @@ def build_facts(
     metrics: pd.DataFrame,
     model_info: dict | None = None,
     egfr_summary: pd.DataFrame | None = None,
-    *,
-    dataset: str = "UCI Diabetes 130-US Hospitals (public)",
 ) -> dict:
     """Collect every reportable number into {"context": ..., "facts": {id: fact}}.
 
     metrics is the audit() metrics frame; model_info the baseline summary
     (uci_model.json); egfr_summary a reclassification_summary() frame. Missing
-    (NaN) values are kept as null so the summary can't invent them.
+    (NaN) values are kept as null so the summary can't invent them. No dataset or
+    institution name is included, so it can't leak into the LLM payload.
     """
     refs = reference_groups(metrics)
     facts: dict[str, dict] = {}
@@ -111,7 +114,6 @@ def build_facts(
                 facts[f"model.{key}"] = {"label": label, "value": _num(model_info[key])}
 
     context = {
-        "dataset": dataset,
         "task": "predict 30-day hospital readmission; the top-risk patients are flagged",
         "reference_groups": refs,
         "small_group_rule": "fewer than 30 readmitted or fewer than 30 not-readmitted patients",
@@ -125,8 +127,67 @@ def build_facts(
         context["egfr"] = (
             "SYNTHETIC Synthea patients, not real-world rates. CKD-EPI 2009 (race-based) vs "
             "2021 (race-free). Lines: ckd_lt60 = eGFR < 60 (CKD diagnosis), referral_lt30 = "
-            "eGFR < 30 (specialist referral), waitlist_le20 = eGFR <= 20 (transplant waiting "
-            "time can start). newly_below = below the line under 2021 only; n_lower = moved "
-            "to a worse stage under 2021."
+            "eGFR < 30 (a line commonly used for specialist referral), waitlist_le20 = "
+            "eGFR <= 20 (transplant waiting time can start). newly_below = below the line "
+            "under 2021 only; n_lower = moved to a worse stage under 2021."
         )
     return {"context": context, "facts": facts}
+
+
+def _is_small(count, min_cell: int) -> bool:
+    return count is not None and 1 <= count < min_cell
+
+
+def suppress_small_cells(facts_json: dict, min_cell: int = MIN_CELL) -> tuple[dict, list[str]]:
+    """Remove groups whose patients, events or non-events number 1 to min_cell - 1.
+
+    Returns (new facts JSON, suppressed groups as "group_col.group"). Following the
+    CMS cell-size convention:
+    - a small group loses all its facts (counts, rates, AUC, CIs, gaps);
+    - if it is the only small group in its column, the next-smallest group is
+      suppressed too, so it can't be recovered by subtracting from the others;
+    - when anything is suppressed, overall totals (test-set size and readmission
+      rate) are dropped for the same reason;
+    - eGFR counts of 1 to min_cell - 1 are removed one by one.
+    This lowers re-identification risk; it does not remove it. The input is not modified.
+    """
+    facts = dict(facts_json["facts"])
+    groups: dict[str, dict[str, int]] = {}
+    for fid, fact in facts.items():
+        col, _, rest = fid.partition(".")
+        group, _, metric = rest.rpartition(".")
+        if col in ("model", "egfr") or metric not in ("n", "n_pos"):
+            continue
+        groups.setdefault(col, {}).setdefault(group, {})[metric] = fact["value"]
+
+    suppressed: list[str] = []
+    for col, by_group in groups.items():
+        small = []
+        for group, counts in by_group.items():
+            n, n_pos = counts.get("n"), counts.get("n_pos")
+            n_neg = n - n_pos if n is not None and n_pos is not None else None
+            if any(_is_small(c, min_cell) for c in (n, n_pos, n_neg)):
+                small.append(group)
+        if len(small) == 1 and len(by_group) > 1:
+            others = sorted((g for g in by_group if g not in small), key=lambda g: by_group[g]["n"])
+            small.append(others[0])
+        suppressed += [f"{col}.{g}" for g in small]
+
+    if suppressed:
+        prefixes = tuple(f"{s}." for s in suppressed)
+        facts = {fid: f for fid, f in facts.items() if not fid.startswith(prefixes)}
+        for key in ("model.n_test", "model.prevalence_test"):
+            facts.pop(key, None)
+    for fid in [f for f in facts if f.startswith("egfr.")]:
+        value = facts[fid]["value"]
+        if isinstance(value, int) and _is_small(value, min_cell):
+            del facts[fid]
+            suppressed.append(fid)
+
+    context = dict(facts_json["context"])
+    context["small_cell_suppression"] = {
+        "min_cell": min_cell,
+        "suppressed": suppressed,
+        "rule": f"groups or counts of 1 to {min_cell - 1} patients or events were removed",
+    }
+    return {"context": context, "facts": facts}, suppressed

@@ -10,9 +10,9 @@ from equitypanel.reclassification.reclassify import LINES, RACE_TERM_COL
 
 SYNTHETIC_LABEL = "Synthetic patients (Synthea). Not real-world rates."
 LINE_LABELS = {
-    "ckd_lt60": "eGFR < 60\nCKD diagnosis",
-    "referral_lt30": "eGFR < 30\nspecialist referral",
-    "waitlist_le20": "eGFR ≤ 20\ntransplant waitlist",
+    "ckd_lt60": "eGFR < 60\nCKD threshold",
+    "referral_lt30": "eGFR < 30\ncommon referral line",
+    "waitlist_le20": "eGFR ≤ 20\ntransplant waiting-time line",
 }
 PANELS = ("Black", "non-Black")
 YEAR_COLORS = {"2009": "#2a78d6", "2021": "#eb6834"}  # categorical slots 1 and 2

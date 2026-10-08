@@ -5,6 +5,7 @@ Every value inserted into the page is escaped (Jinja2 autoescape), so a group na
 are inserted as markup.
 """
 
+from collections.abc import Sequence
 from datetime import date
 
 import pandas as pd
@@ -12,7 +13,7 @@ import pandas as pd
 from equitypanel import __version__
 from equitypanel.data.schema import AGE_BANDS
 from equitypanel.report.charts import calibration_chart, figure_to_svg, group_ci_chart
-from equitypanel.report.facts import reference_groups
+from equitypanel.report.facts import MIN_CELL, reference_groups
 from equitypanel.report.summary import Summary
 
 TABLE_METRICS = ("auc", "brier", "o_e", "fpr", "fnr", "ppv")
@@ -36,8 +37,9 @@ def fmt(metric: str, value) -> str:
         return "n/a"
     base = metric.removesuffix("_gap")
     if base in PERCENT_METRICS:
-        sign = "+" if metric.endswith("_gap") and value > 0 else ""
-        return f"{sign}{100 * value:.1f}%"
+        if metric.endswith("_gap"):  # a difference of two rates: percentage points
+            return f"{100 * value:+.1f} pts"
+        return f"{100 * value:.1f}%"
     if metric.endswith("_gap"):
         return f"{value:+.3f}"
     if base in ("n", "n_pos"):
@@ -127,6 +129,20 @@ def _egfr_section(egfr_summary: pd.DataFrame) -> dict:
     }
 
 
+def _tiny_groups(metrics: pd.DataFrame, min_cell: int = MIN_CELL) -> list[str]:
+    """Groups whose patients, readmitted or not-readmitted count is 1 to min_cell - 1."""
+    counts = metrics[metrics["metric"].isin(["n", "n_pos"])].pivot_table(
+        index=["group_col", "group"], columns="metric", values="value", sort=False
+    )
+    out = []
+    for (col, group), row in counts.iterrows():
+        n, n_pos = row.get("n"), row.get("n_pos")
+        values = [n, n_pos, n - n_pos if pd.notna(n) and pd.notna(n_pos) else None]
+        if any(v is not None and pd.notna(v) and 1 <= v < min_cell for v in values):
+            out.append(f"{GROUP_COL_TITLES.get(col, col)}: {group}")
+    return out
+
+
 def _summary_context(summary: Summary | None) -> dict | None:
     if summary is None:
         return None
@@ -137,6 +153,7 @@ def _summary_context(summary: Summary | None) -> dict | None:
         "model": summary.model,
         "attempts": summary.attempts,
         "error": summary.error,
+        "min_cell": summary.min_cell,
     }
 
 
@@ -151,12 +168,16 @@ def build_report(
     dataset: str = "UCI Diabetes 130-US Hospitals (public data)",
     methods: dict | None = None,
     generated: date | None = None,
+    data_credits: Sequence[str] = (),
+    footer_note: str | None = None,
 ) -> str:
     """Return the full report as one self-contained HTML string.
 
     metrics / calibration come from audit(); model_info is the baseline summary dict;
     egfr_summary a reclassification_summary() frame (shown labelled as synthetic);
-    summary a checked LLM Summary, or None for "not generated".
+    summary a checked LLM Summary, or None for "not generated". data_credits are
+    printed in the footer (dataset citations and licenses); footer_note too (e.g. a
+    hosting notice).
     """
     from jinja2 import Environment, PackageLoader, select_autoescape
 
@@ -177,6 +198,7 @@ def build_report(
         )
         .tolist()
     )
+    tiny_groups = _tiny_groups(metrics)
     key_numbers = []
     if model_info:
         key_numbers = [
@@ -195,6 +217,9 @@ def build_report(
         generated=(generated or date.today()).isoformat(),
         key_numbers=key_numbers,
         small_groups=small_groups,
+        tiny_groups=tiny_groups,
+        data_credits=list(data_credits),
+        footer_note=footer_note,
         summary=_summary_context(summary),
         headers=[METRIC_HEADERS[m] for m in TABLE_METRICS],
         sections=[_group_section(metrics, calibration, col, refs[col]) for col in refs],

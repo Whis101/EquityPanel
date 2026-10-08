@@ -374,7 +374,8 @@ def test_chart_rejects_missing_rows(audited):
 
 def test_fmt():
     assert fmt("fnr", 0.7959) == "79.6%"
-    assert fmt("fnr_gap", 0.019) == "+1.9%"
+    assert fmt("fnr_gap", 0.019) == "+1.9 pts"  # percentage points, not percent
+    assert fmt("fpr_gap", -0.032) == "-3.2 pts"
     assert fmt("auc", 0.6543) == "0.654"
     assert fmt("auc_gap", -0.0123) == "-0.012"
     assert fmt("n", 3826.0) == "3,826"
@@ -393,7 +394,7 @@ def test_report_without_summary_or_egfr(audited):
     html = build_report(metrics, calibration)
     assert html.startswith("<!doctype html>")
     assert "Summary not generated" in html
-    assert "Auditing aid, not a clinical tool" in html
+    assert "Auditing aid for research and education, not a clinical" in html
     assert "eGFR" not in html
     assert html.count("<svg") == 9  # 3 group columns x (AUC, FNR, calibration)
     assert "<script" not in html  # no JavaScript, no external requests
@@ -461,3 +462,205 @@ def test_build_report_script(audited, egfr_summary, tmp_path, monkeypatch, capsy
     assert (tmp_path / "site" / "index.html").read_text(encoding="utf-8") == html
     facts = json.loads((tmp_path / "uci_facts.json").read_text(encoding="utf-8"))
     assert "age_band.<50.auc" in facts["facts"]  # "<50" stayed a string label
+
+
+def test_summary_banner_says_ai_generated_and_methods_names_the_model(audited):
+    metrics, calibration = audited
+    summary = summarise(FACTS_JSON, FakeClient([GOOD]))
+    html = build_report(metrics, calibration, summary=summary)
+    assert "AI-generated summary" in html
+    assert "Written by" not in html
+    assert f"<dt>Summary model</dt><dd>{MODEL} via the Anthropic API" in html
+
+
+def test_report_carries_the_disclaimers(audited):
+    metrics, calibration = audited
+    html = " ".join(build_report(metrics, calibration).split())
+    assert "It is not medical advice, has not been clinically validated" in html
+    assert "must not be used to make or influence decisions about individual patients" in html
+    assert "its numbers describe that dataset, not any individual" in html
+    assert "never publish it, including on GitHub Pages" in html
+    assert "does not certify a model as fair, safe or compliant" in html
+    assert 'provided "as is" under the MIT License, without warranty' in html
+    assert "Not affiliated with or endorsed by" in html
+    # A generic report must not claim its data was public or synthetic.
+    assert "public or synthetic data only" not in html
+
+
+# ---------------------------------------------------------------- small-cell safeguards
+
+from equitypanel.report.facts import MIN_CELL, suppress_small_cells  # noqa: E402
+
+
+def _cells_json():
+    """Race: Asian has 8 readmitted (small); sex: Unknown has 2 patients (small)."""
+    facts = {}
+    for col, group, n, n_pos in [
+        ("race", "White", 1000, 100),
+        ("race", "Black", 400, 40),
+        ("race", "Other", 60, 12),
+        ("race", "Asian", 50, 8),
+        ("sex", "Female", 760, 80),
+        ("sex", "Male", 748, 79),
+        ("sex", "Unknown", 2, 1),
+    ]:
+        facts[f"{col}.{group}.n"] = {"value": n, "n": n}
+        facts[f"{col}.{group}.n_pos"] = {"value": n_pos, "n": n}
+        facts[f"{col}.{group}.fnr"] = {"value": 0.5, "n": n, "ci_95": [0.4, 0.6]}
+    facts["race.Asian.fnr_gap"] = {"value": 0.1, "n": 50}
+    facts["model.n_test"] = {"value": 1510}
+    facts["model.prevalence_test"] = {"value": 0.1}
+    facts["model.auc_test"] = {"value": 0.64}
+    facts["egfr.Black.waitlist_le20_newly_below"] = {"value": 7}
+    facts["egfr.Black.waitlist_le20_2021"] = {"value": 89}
+    facts["egfr.Black.n_higher"] = {"value": 0}
+    return {"context": {"task": "x"}, "facts": facts}
+
+
+def test_suppression_removes_small_groups_and_a_complementary_group():
+    original = _cells_json()
+    payload, suppressed = suppress_small_cells(original)
+    # Asian (8 readmitted) and Unknown sex (2 patients) are small; each is the only small
+    # group in its column, so the next-smallest group is suppressed too.
+    assert suppressed[:4] == ["race.Asian", "race.Other", "sex.Unknown", "sex.Male"]
+    facts = payload["facts"]
+    for group in ("race.Asian", "race.Other", "sex.Unknown", "sex.Male"):
+        assert not any(fid.startswith(group + ".") for fid in facts)
+    assert "race.White.fnr" in facts and "sex.Female.fnr" in facts
+    # Totals would let a hidden cell be recovered by subtraction.
+    assert "model.n_test" not in facts and "model.prevalence_test" not in facts
+    assert "model.auc_test" in facts
+    # eGFR counts of 1-10 go; 0 and large counts stay.
+    assert "egfr.Black.waitlist_le20_newly_below" not in facts
+    assert "egfr.Black.waitlist_le20_2021" in facts and "egfr.Black.n_higher" in facts
+    assert payload["context"]["small_cell_suppression"]["min_cell"] == MIN_CELL == 11
+    assert "race.Asian.n" in original["facts"]  # input not modified
+
+
+def test_suppression_counts_non_events_too():
+    data = {
+        "context": {},
+        "facts": {
+            "race.A.n": {"value": 100},
+            "race.A.n_pos": {"value": 95},  # 5 non-events
+            "race.B.n": {"value": 200},
+            "race.B.n_pos": {"value": 20},
+            "race.C.n": {"value": 300},
+            "race.C.n_pos": {"value": 30},
+        },
+    }
+    _, suppressed = suppress_small_cells(data)
+    assert suppressed == ["race.A", "race.B"]
+
+
+def test_no_suppression_when_all_groups_are_large():
+    data = {
+        "context": {},
+        "facts": {
+            "race.A.n": {"value": 100},
+            "race.A.n_pos": {"value": 50},
+            "model.n_test": {"value": 100},
+        },
+    }
+    payload, suppressed = suppress_small_cells(data)
+    assert suppressed == [] and "model.n_test" in payload["facts"]
+
+
+def test_checker_rejects_a_suppressed_number():
+    payload, _ = suppress_small_cells(_cells_json())
+    # A summary can't restate the hidden group's size: the fact isn't in the payload.
+    assert "unknown" in check_finding(
+        "2 patients have unknown sex.", ["sex.Unknown.n"], payload["facts"]
+    )
+
+
+def test_facts_carry_no_dataset_name(facts_json):
+    assert "dataset" not in facts_json["context"]
+
+
+def test_summary_records_the_suppression_threshold():
+    payload, _ = suppress_small_cells(FACTS_JSON)
+    summary = summarise(payload, FakeClient([GOOD]))
+    assert summary.min_cell == 11
+    assert Summary.from_dict(summary.to_dict()).min_cell == 11
+
+
+def test_report_warns_about_tiny_groups_and_shows_credits(audited):
+    metrics, calibration = audited
+    tiny = metrics.copy()
+    mask = (tiny["group"] == "Asian") & (tiny["metric"] == "n_pos")
+    tiny.loc[mask, "value"] = 3
+    html = " ".join(
+        build_report(
+            tiny, calibration, data_credits=["Data: Example (CC BY 4.0)."], footer_note="Hosted."
+        ).split()
+    )
+    assert "Very small groups:</strong> Race: Asian. Each has fewer than 11 patients" in html
+    assert "<p>Data: Example (CC BY 4.0).</p>" in html and "<p>Hosted.</p>" in html
+
+
+def test_methods_state_whether_suppression_was_on(audited):
+    metrics, calibration = audited
+    on = Summary(findings=[], attempts=1, min_cell=11)
+    off = Summary(findings=[], attempts=1, min_cell=None)
+    assert (
+        "Small-cell suppression before sending: on (groups or counts of 1 to 10 removed)"
+        in " ".join(build_report(metrics, calibration, summary=on).split())
+    )
+    assert "Small-cell suppression before sending: off (public data)" in " ".join(
+        build_report(metrics, calibration, summary=off).split()
+    )
+
+
+def _load_script():
+    import importlib.util
+    from pathlib import Path
+
+    script = Path(__file__).resolve().parents[1] / "scripts" / "build_report.py"
+    spec = importlib.util.spec_from_file_location("build_report_llm", script)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def _write_outputs(tmp_path, audited):
+    metrics, calibration = audited
+    metrics = metrics.copy()
+    # Give Asian 8 readmitted patients so small-cell suppression has something to remove.
+    metrics.loc[(metrics["group"] == "Asian") & (metrics["metric"] == "n_pos"), "value"] = 8
+    metrics.to_csv(tmp_path / "uci_audit_metrics.csv", index=False)
+    calibration.to_csv(tmp_path / "uci_audit_calibration.csv", index=False)
+    (tmp_path / "uci_model.json").write_text(json.dumps(MODEL_INFO), encoding="utf-8")
+
+
+def test_llm_flow_suppresses_shows_payload_and_asks(audited, tmp_path, monkeypatch, capsys):
+    _write_outputs(tmp_path, audited)
+    module = _load_script()
+    client = FakeClient([{"text": "AUC is 0.71.", "fact_ids": ["model.auc_test"]}])
+    monkeypatch.setattr(module, "ROOT", tmp_path)
+    monkeypatch.setattr(module, "make_client", lambda: client)
+    monkeypatch.setattr("builtins.input", lambda prompt: "y")
+
+    module.main(["--outputs", str(tmp_path), "--llm"])
+    out = capsys.readouterr().out
+    assert "aggregate facts, no patient rows" in out
+    assert "Suppressed (fewer than 11 patients or events): race.Asian" in out
+    payload = json.loads((tmp_path / "llm_payload.json").read_text(encoding="utf-8"))
+    sent = json.loads(client.calls[0]["messages"][0]["content"].split("\n", 1)[1])
+    assert sent == payload  # what was saved is exactly what was sent
+    assert not any(fid.startswith("race.Asian.") for fid in sent["facts"])
+    assert json.loads((tmp_path / "uci_summary.json").read_text(encoding="utf-8"))["min_cell"] == 11
+
+
+def test_llm_flow_sends_nothing_without_confirmation(audited, tmp_path, monkeypatch, capsys):
+    _write_outputs(tmp_path, audited)
+    module = _load_script()
+    client = FakeClient([GOOD])
+    monkeypatch.setattr(module, "ROOT", tmp_path)
+    monkeypatch.setattr(module, "make_client", lambda: client)
+    monkeypatch.setattr("builtins.input", lambda prompt: "")  # just Enter = no
+
+    module.main(["--outputs", str(tmp_path), "--llm"])
+    assert client.calls == []
+    assert "Not sent" in capsys.readouterr().out
+    assert "Summary not generated" in (tmp_path / "uci_report.html").read_text(encoding="utf-8")
