@@ -20,11 +20,15 @@ dependencies = [
 model = [
     "scikit-learn>=1.4",  # the baseline model in equitypanel.model
 ]
+report = [
+    "matplotlib>=3.8",  # charts in equitypanel.reclassification.plot (and the M5 report)
+]
 dev = [
     "pytest>=8.0",
     "pytest-cov>=5.0",
     "ruff>=0.6",
     "scikit-learn>=1.4",  # test-only answer key for the hand-written AUC
+    "matplotlib>=3.8",  # so the chart tests run in CI
 ]
 
 [tool.hatch.version]
