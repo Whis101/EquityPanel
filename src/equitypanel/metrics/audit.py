@@ -112,7 +112,8 @@ def audit(
     df is an audit frame (y_true 0/1, y_score in [0, 1], plus group_cols). A patient
     is flagged when y_score >= threshold. The reference group for gaps is the largest
     group (ties: first in sorted order) unless `reference` maps a column to a group.
-    Groups below min_group_size are flagged, not dropped. Undefined metrics are NaN.
+    A group is flagged small_group (not dropped) when it has fewer than min_group_size
+    readmitted or fewer than min_group_size not-readmitted patients. Undefined metrics are NaN.
 
     Raises SchemaError for an invalid frame and ValueError for a bad option.
     """
@@ -144,9 +145,12 @@ def audit(
 
         for k in keys:
             base = {"group_col": col, "group": k, "n": sizes[k]}
-            base["small_group"] = sizes[k] < min_group_size
+            # Small if either outcome is rare: FNR rests only on the readmitted patients,
+            # FPR only on the rest, so a big group with 8 readmissions is still "small".
+            n_pos = int(y[groups == k].sum())
+            base["small_group"] = min(n_pos, sizes[k] - n_pos) < min_group_size
             metric_rows.append(_row(base, "n", sizes[k]))
-            metric_rows.append(_row(base, "n_pos", y[groups == k].sum()))
+            metric_rows.append(_row(base, "n_pos", n_pos))
             for m in CI_METRICS:
                 metric_rows.append(_row(base, m, point[k][m], reps[k][m], ci))
             if k != ref:  # the reference group has no gap rows

@@ -21,6 +21,7 @@ htmlcov/
 # Data (never commit)
 data/raw/
 data/processed/
+outputs/
 *.csv
 *.parquet
 
