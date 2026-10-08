@@ -1,0 +1,70 @@
+{
+  "n_train": 48993,
+  "n_test": 20997,
+  "prevalence_test": 0.0897747297232938,
+  "auc_test": 0.6433504912546786,
+  "threshold": 0.1465200281265229,
+  "flag_share_test": 0.09901414487783969,
+  "top_weights": [
+    {
+      "feature": "discharge_disposition_id_23",
+      "weight": -1.568397536659894
+    },
+    {
+      "feature": "discharge_disposition_id_28",
+      "weight": 1.4086960276436937
+    },
+    {
+      "feature": "discharge_disposition_id_25",
+      "weight": -1.0767580092944884
+    },
+    {
+      "feature": "discharge_disposition_id_15",
+      "weight": 1.0610440986024263
+    },
+    {
+      "feature": "discharge_disposition_id_22",
+      "weight": 0.9136734293007637
+    },
+    {
+      "feature": "discharge_disposition_id_1",
+      "weight": -0.6660085607541306
+    },
+    {
+      "feature": "discharge_disposition_id_5",
+      "weight": 0.5202417796783012
+    },
+    {
+      "feature": "admission_source_id_5",
+      "weight": -0.40282812059003564
+    },
+    {
+      "feature": "admission_source_id_20",
+      "weight": 0.39187509799238884
+    },
+    {
+      "feature": "discharge_disposition_id_6",
+      "weight": -0.3663941134515461
+    },
+    {
+      "feature": "diabetesMed_No",
+      "weight": -0.3581207688011817
+    },
+    {
+      "feature": "admission_source_id_9",
+      "weight": 0.3310326637602645
+    },
+    {
+      "feature": "discharge_disposition_id_4",
+      "weight": -0.3226939611396064
+    },
+    {
+      "feature": "diag_1_musculoskeletal",
+      "weight": -0.3075051688264465
+    },
+    {
+      "feature": "diag_3_missing",
+      "weight": -0.3071099988013057
+    }
+  ]
+}

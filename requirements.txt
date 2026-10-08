@@ -1,0 +1,2 @@
+# For Streamlit Community Cloud: installs EquityPanel with the demo extra.
+.[demo]

@@ -1,0 +1,2176 @@
+{
+ "context": {
+  "task": "predict 30-day hospital readmission; the top-risk patients are flagged",
+  "reference_groups": {
+   "race": "White",
+   "sex": "Female",
+   "age_band": "70-79"
+  },
+  "small_group_rule": "fewer than 30 readmitted or fewer than 30 not-readmitted patients",
+  "ci": "95% stratified bootstrap",
+  "egfr": "SYNTHETIC Synthea patients, not real-world rates. CKD-EPI 2009 (race-based) vs 2021 (race-free). Lines: ckd_lt60 = eGFR < 60 (CKD diagnosis), referral_lt30 = eGFR < 30 (a line commonly used for specialist referral), waitlist_le20 = eGFR <= 20 (transplant waiting time can start). newly_below = below the line under 2021 only; n_lower = moved to a worse stage under 2021."
+ },
+ "facts": {
+  "race.Asian.n": {
+   "label": "patients",
+   "value": 153,
+   "n": 153,
+   "small_group": true
+  },
+  "race.Asian.n_pos": {
+   "label": "readmitted patients",
+   "value": 8,
+   "n": 153,
+   "small_group": true
+  },
+  "race.Asian.prevalence": {
+   "label": "readmission rate",
+   "value": 0.0523,
+   "n": 153,
+   "small_group": true,
+   "ci_95": [
+    0.0196,
+    0.085
+   ]
+  },
+  "race.Asian.auc": {
+   "label": "AUC (ranking accuracy, 0.5 = chance)",
+   "value": 0.6776,
+   "n": 153,
+   "small_group": true,
+   "ci_95": [
+    0.5034,
+    0.8582
+   ]
+  },
+  "race.Asian.brier": {
+   "label": "Brier score (lower is better)",
+   "value": 0.0497,
+   "n": 153,
+   "small_group": true,
+   "ci_95": [
+    0.0237,
+    0.0784
+   ]
+  },
+  "race.Asian.o_e": {
+   "label": "observed / expected readmissions (1 = calibrated)",
+   "value": 0.6907,
+   "n": 153,
+   "small_group": true,
+   "ci_95": [
+    0.2684,
+    1.1683
+   ]
+  },
+  "race.Asian.flag_rate": {
+   "label": "share flagged for follow-up",
+   "value": 0.0654,
+   "n": 153,
+   "small_group": true,
+   "ci_95": [
+    0.0261,
+    0.1111
+   ]
+  },
+  "race.Asian.fpr": {
+   "label": "false positive rate (flagged but not readmitted)",
+   "value": 0.0621,
+   "n": 153,
+   "small_group": true,
+   "ci_95": [
+    0.0272,
+    0.1056
+   ]
+  },
+  "race.Asian.fnr": {
+   "label": "false negative rate (readmitted but not flagged)",
+   "value": 0.875,
+   "n": 153,
+   "small_group": true,
+   "ci_95": [
+    0.5714,
+    1
+   ]
+  },
+  "race.Asian.ppv": {
+   "label": "positive predictive value (flagged who were readmitted)",
+   "value": 0.1,
+   "n": 153,
+   "small_group": true,
+   "ci_95": [
+    0.0,
+    0.3636
+   ]
+  },
+  "race.Asian.auc_gap": {
+   "label": "gap in AUC (ranking accuracy, 0.5 = chance) vs the reference group (White)",
+   "value": 0.0375,
+   "n": 153,
+   "small_group": true,
+   "ci_95": [
+    -0.1364,
+    0.2152
+   ]
+  },
+  "race.Asian.brier_gap": {
+   "label": "gap in Brier score (lower is better) vs the reference group (White)",
+   "value": -0.0322,
+   "n": 153,
+   "small_group": true,
+   "ci_95": [
+    -0.0581,
+    -0.0029
+   ]
+  },
+  "race.Asian.o_e_gap": {
+   "label": "gap in observed / expected readmissions (1 = calibrated) vs the reference group (White)",
+   "value": -0.3115,
+   "n": 153,
+   "small_group": true,
+   "ci_95": [
+    -0.7349,
+    0.1688
+   ]
+  },
+  "race.Asian.flag_rate_gap": {
+   "label": "gap in share flagged for follow-up vs the reference group (White)",
+   "value": -0.0406,
+   "n": 153,
+   "small_group": true,
+   "ci_95": [
+    -0.0777,
+    0.0037
+   ]
+  },
+  "race.Asian.fpr_gap": {
+   "label": "gap in false positive rate (flagged but not readmitted) vs the reference group (White)",
+   "value": -0.032,
+   "n": 153,
+   "small_group": true,
+   "ci_95": [
+    -0.0668,
+    0.0119
+   ]
+  },
+  "race.Asian.fnr_gap": {
+   "label": "gap in false negative rate (readmitted but not flagged) vs the reference group (White)",
+   "value": 0.0981,
+   "n": 153,
+   "small_group": true,
+   "ci_95": [
+    -0.2046,
+    0.2415
+   ]
+  },
+  "race.Asian.ppv_gap": {
+   "label": "gap in positive predictive value (flagged who were readmitted) vs the reference group (White)",
+   "value": -0.0941,
+   "n": 153,
+   "small_group": true,
+   "ci_95": [
+    -0.2096,
+    0.1687
+   ]
+  },
+  "race.Black.n": {
+   "label": "patients",
+   "value": 3826,
+   "n": 3826,
+   "small_group": false
+  },
+  "race.Black.n_pos": {
+   "label": "readmitted patients",
+   "value": 343,
+   "n": 3826,
+   "small_group": false
+  },
+  "race.Black.prevalence": {
+   "label": "readmission rate",
+   "value": 0.0896,
+   "n": 3826,
+   "small_group": false,
+   "ci_95": [
+    0.0808,
+    0.098
+   ]
+  },
+  "race.Black.auc": {
+   "label": "AUC (ranking accuracy, 0.5 = chance)",
+   "value": 0.6548,
+   "n": 3826,
+   "small_group": false,
+   "ci_95": [
+    0.6249,
+    0.6837
+   ]
+  },
+  "race.Black.brier": {
+   "label": "Brier score (lower is better)",
+   "value": 0.0792,
+   "n": 3826,
+   "small_group": false,
+   "ci_95": [
+    0.0722,
+    0.0862
+   ]
+  },
+  "race.Black.o_e": {
+   "label": "observed / expected readmissions (1 = calibrated)",
+   "value": 1.0635,
+   "n": 3826,
+   "small_group": false,
+   "ci_95": [
+    0.9622,
+    1.1608
+   ]
+  },
+  "race.Black.flag_rate": {
+   "label": "share flagged for follow-up",
+   "value": 0.08,
+   "n": 3826,
+   "small_group": false,
+   "ci_95": [
+    0.0716,
+    0.0889
+   ]
+  },
+  "race.Black.fpr": {
+   "label": "false positive rate (flagged but not readmitted)",
+   "value": 0.0678,
+   "n": 3826,
+   "small_group": false,
+   "ci_95": [
+    0.0596,
+    0.0761
+   ]
+  },
+  "race.Black.fnr": {
+   "label": "false negative rate (readmitted but not flagged)",
+   "value": 0.7959,
+   "n": 3826,
+   "small_group": false,
+   "ci_95": [
+    0.7522,
+    0.8367
+   ]
+  },
+  "race.Black.ppv": {
+   "label": "positive predictive value (flagged who were readmitted)",
+   "value": 0.2288,
+   "n": 3826,
+   "small_group": false,
+   "ci_95": [
+    0.1837,
+    0.2754
+   ]
+  },
+  "race.Black.auc_gap": {
+   "label": "gap in AUC (ranking accuracy, 0.5 = chance) vs the reference group (White)",
+   "value": 0.0147,
+   "n": 3826,
+   "small_group": false,
+   "ci_95": [
+    -0.0193,
+    0.045
+   ]
+  },
+  "race.Black.brier_gap": {
+   "label": "gap in Brier score (lower is better) vs the reference group (White)",
+   "value": -0.0027,
+   "n": 3826,
+   "small_group": false,
+   "ci_95": [
+    -0.011,
+    0.0049
+   ]
+  },
+  "race.Black.o_e_gap": {
+   "label": "gap in observed / expected readmissions (1 = calibrated) vs the reference group (White)",
+   "value": 0.0613,
+   "n": 3826,
+   "small_group": false,
+   "ci_95": [
+    -0.0585,
+    0.1755
+   ]
+  },
+  "race.Black.flag_rate_gap": {
+   "label": "gap in share flagged for follow-up vs the reference group (White)",
+   "value": -0.026,
+   "n": 3826,
+   "small_group": false,
+   "ci_95": [
+    -0.035,
+    -0.0157
+   ]
+  },
+  "race.Black.fpr_gap": {
+   "label": "gap in false positive rate (flagged but not readmitted) vs the reference group (White)",
+   "value": -0.0263,
+   "n": 3826,
+   "small_group": false,
+   "ci_95": [
+    -0.0356,
+    -0.017
+   ]
+  },
+  "race.Black.fnr_gap": {
+   "label": "gap in false negative rate (readmitted but not flagged) vs the reference group (White)",
+   "value": 0.019,
+   "n": 3826,
+   "small_group": false,
+   "ci_95": [
+    -0.0281,
+    0.0658
+   ]
+  },
+  "race.Black.ppv_gap": {
+   "label": "gap in positive predictive value (flagged who were readmitted) vs the reference group (White)",
+   "value": 0.0347,
+   "n": 3826,
+   "small_group": false,
+   "ci_95": [
+    -0.0153,
+    0.0838
+   ]
+  },
+  "race.Hispanic.n": {
+   "label": "patients",
+   "value": 474,
+   "n": 474,
+   "small_group": false
+  },
+  "race.Hispanic.n_pos": {
+   "label": "readmitted patients",
+   "value": 34,
+   "n": 474,
+   "small_group": false
+  },
+  "race.Hispanic.prevalence": {
+   "label": "readmission rate",
+   "value": 0.0717,
+   "n": 474,
+   "small_group": false,
+   "ci_95": [
+    0.0506,
+    0.0949
+   ]
+  },
+  "race.Hispanic.auc": {
+   "label": "AUC (ranking accuracy, 0.5 = chance)",
+   "value": 0.6753,
+   "n": 474,
+   "small_group": false,
+   "ci_95": [
+    0.5738,
+    0.7735
+   ]
+  },
+  "race.Hispanic.brier": {
+   "label": "Brier score (lower is better)",
+   "value": 0.0652,
+   "n": 474,
+   "small_group": false,
+   "ci_95": [
+    0.0478,
+    0.0839
+   ]
+  },
+  "race.Hispanic.o_e": {
+   "label": "observed / expected readmissions (1 = calibrated)",
+   "value": 0.8356,
+   "n": 474,
+   "small_group": false,
+   "ci_95": [
+    0.587,
+    1.1043
+   ]
+  },
+  "race.Hispanic.flag_rate": {
+   "label": "share flagged for follow-up",
+   "value": 0.0844,
+   "n": 474,
+   "small_group": false,
+   "ci_95": [
+    0.0591,
+    0.1119
+   ]
+  },
+  "race.Hispanic.fpr": {
+   "label": "false positive rate (flagged but not readmitted)",
+   "value": 0.0705,
+   "n": 474,
+   "small_group": false,
+   "ci_95": [
+    0.0479,
+    0.0986
+   ]
+  },
+  "race.Hispanic.fnr": {
+   "label": "false negative rate (readmitted but not flagged)",
+   "value": 0.7353,
+   "n": 474,
+   "small_group": false,
+   "ci_95": [
+    0.5757,
+    0.875
+   ]
+  },
+  "race.Hispanic.ppv": {
+   "label": "positive predictive value (flagged who were readmitted)",
+   "value": 0.225,
+   "n": 474,
+   "small_group": false,
+   "ci_95": [
+    0.1025,
+    0.3529
+   ]
+  },
+  "race.Hispanic.auc_gap": {
+   "label": "gap in AUC (ranking accuracy, 0.5 = chance) vs the reference group (White)",
+   "value": 0.0352,
+   "n": 474,
+   "small_group": false,
+   "ci_95": [
+    -0.0671,
+    0.1328
+   ]
+  },
+  "race.Hispanic.brier_gap": {
+   "label": "gap in Brier score (lower is better) vs the reference group (White)",
+   "value": -0.0167,
+   "n": 474,
+   "small_group": false,
+   "ci_95": [
+    -0.0346,
+    0.0021
+   ]
+  },
+  "race.Hispanic.o_e_gap": {
+   "label": "gap in observed / expected readmissions (1 = calibrated) vs the reference group (White)",
+   "value": -0.1667,
+   "n": 474,
+   "small_group": false,
+   "ci_95": [
+    -0.415,
+    0.101
+   ]
+  },
+  "race.Hispanic.flag_rate_gap": {
+   "label": "gap in share flagged for follow-up vs the reference group (White)",
+   "value": -0.0215,
+   "n": 474,
+   "small_group": false,
+   "ci_95": [
+    -0.0458,
+    0.0079
+   ]
+  },
+  "race.Hispanic.fpr_gap": {
+   "label": "gap in false positive rate (flagged but not readmitted) vs the reference group (White)",
+   "value": -0.0236,
+   "n": 474,
+   "small_group": false,
+   "ci_95": [
+    -0.0464,
+    0.0047
+   ]
+  },
+  "race.Hispanic.fnr_gap": {
+   "label": "gap in false negative rate (readmitted but not flagged) vs the reference group (White)",
+   "value": -0.0416,
+   "n": 474,
+   "small_group": false,
+   "ci_95": [
+    -0.1955,
+    0.1025
+   ]
+  },
+  "race.Hispanic.ppv_gap": {
+   "label": "gap in positive predictive value (flagged who were readmitted) vs the reference group (White)",
+   "value": 0.0309,
+   "n": 474,
+   "small_group": false,
+   "ci_95": [
+    -0.098,
+    0.1567
+   ]
+  },
+  "race.Other.n": {
+   "label": "patients",
+   "value": 375,
+   "n": 375,
+   "small_group": true
+  },
+  "race.Other.n_pos": {
+   "label": "readmitted patients",
+   "value": 25,
+   "n": 375,
+   "small_group": true
+  },
+  "race.Other.prevalence": {
+   "label": "readmission rate",
+   "value": 0.0667,
+   "n": 375,
+   "small_group": true,
+   "ci_95": [
+    0.0453,
+    0.0907
+   ]
+  },
+  "race.Other.auc": {
+   "label": "AUC (ranking accuracy, 0.5 = chance)",
+   "value": 0.5474,
+   "n": 375,
+   "small_group": true,
+   "ci_95": [
+    0.4437,
+    0.6479
+   ]
+  },
+  "race.Other.brier": {
+   "label": "Brier score (lower is better)",
+   "value": 0.0644,
+   "n": 375,
+   "small_group": true,
+   "ci_95": [
+    0.0452,
+    0.0861
+   ]
+  },
+  "race.Other.o_e": {
+   "label": "observed / expected readmissions (1 = calibrated)",
+   "value": 0.8322,
+   "n": 375,
+   "small_group": true,
+   "ci_95": [
+    0.542,
+    1.1567
+   ]
+  },
+  "race.Other.flag_rate": {
+   "label": "share flagged for follow-up",
+   "value": 0.0613,
+   "n": 375,
+   "small_group": true,
+   "ci_95": [
+    0.0399,
+    0.0853
+   ]
+  },
+  "race.Other.fpr": {
+   "label": "false positive rate (flagged but not readmitted)",
+   "value": 0.0629,
+   "n": 375,
+   "small_group": true,
+   "ci_95": [
+    0.0398,
+    0.0876
+   ]
+  },
+  "race.Other.fnr": {
+   "label": "false negative rate (readmitted but not flagged)",
+   "value": 0.96,
+   "n": 375,
+   "small_group": true,
+   "ci_95": [
+    0.8696,
+    1
+   ]
+  },
+  "race.Other.ppv": {
+   "label": "positive predictive value (flagged who were readmitted)",
+   "value": 0.0435,
+   "n": 375,
+   "small_group": true,
+   "ci_95": [
+    0.0,
+    0.1429
+   ]
+  },
+  "race.Other.auc_gap": {
+   "label": "gap in AUC (ranking accuracy, 0.5 = chance) vs the reference group (White)",
+   "value": -0.0927,
+   "n": 375,
+   "small_group": true,
+   "ci_95": [
+    -0.1974,
+    0.0107
+   ]
+  },
+  "race.Other.brier_gap": {
+   "label": "gap in Brier score (lower is better) vs the reference group (White)",
+   "value": -0.0175,
+   "n": 375,
+   "small_group": true,
+   "ci_95": [
+    -0.0363,
+    0.0041
+   ]
+  },
+  "race.Other.o_e_gap": {
+   "label": "gap in observed / expected readmissions (1 = calibrated) vs the reference group (White)",
+   "value": -0.17,
+   "n": 375,
+   "small_group": true,
+   "ci_95": [
+    -0.4579,
+    0.1563
+   ]
+  },
+  "race.Other.flag_rate_gap": {
+   "label": "gap in share flagged for follow-up vs the reference group (White)",
+   "value": -0.0446,
+   "n": 375,
+   "small_group": true,
+   "ci_95": [
+    -0.0664,
+    -0.0192
+   ]
+  },
+  "race.Other.fpr_gap": {
+   "label": "gap in false positive rate (flagged but not readmitted) vs the reference group (White)",
+   "value": -0.0312,
+   "n": 375,
+   "small_group": true,
+   "ci_95": [
+    -0.0546,
+    -0.0044
+   ]
+  },
+  "race.Other.fnr_gap": {
+   "label": "gap in false negative rate (readmitted but not flagged) vs the reference group (White)",
+   "value": 0.1831,
+   "n": 375,
+   "small_group": true,
+   "ci_95": [
+    0.0895,
+    0.2425
+   ]
+  },
+  "race.Other.ppv_gap": {
+   "label": "gap in positive predictive value (flagged who were readmitted) vs the reference group (White)",
+   "value": -0.1506,
+   "n": 375,
+   "small_group": true,
+   "ci_95": [
+    -0.2104,
+    -0.0485
+   ]
+  },
+  "race.Unknown.n": {
+   "label": "patients",
+   "value": 555,
+   "n": 555,
+   "small_group": false
+  },
+  "race.Unknown.n_pos": {
+   "label": "readmitted patients",
+   "value": 36,
+   "n": 555,
+   "small_group": false
+  },
+  "race.Unknown.prevalence": {
+   "label": "readmission rate",
+   "value": 0.0649,
+   "n": 555,
+   "small_group": false,
+   "ci_95": [
+    0.0468,
+    0.0865
+   ]
+  },
+  "race.Unknown.auc": {
+   "label": "AUC (ranking accuracy, 0.5 = chance)",
+   "value": 0.6475,
+   "n": 555,
+   "small_group": false,
+   "ci_95": [
+    0.5634,
+    0.7341
+   ]
+  },
+  "race.Unknown.brier": {
+   "label": "Brier score (lower is better)",
+   "value": 0.061,
+   "n": 555,
+   "small_group": false,
+   "ci_95": [
+    0.0456,
+    0.0787
+   ]
+  },
+  "race.Unknown.o_e": {
+   "label": "observed / expected readmissions (1 = calibrated)",
+   "value": 0.7651,
+   "n": 555,
+   "small_group": false,
+   "ci_95": [
+    0.5416,
+    1.0149
+   ]
+  },
+  "race.Unknown.flag_rate": {
+   "label": "share flagged for follow-up",
+   "value": 0.0829,
+   "n": 555,
+   "small_group": false,
+   "ci_95": [
+    0.0613,
+    0.1064
+   ]
+  },
+  "race.Unknown.fpr": {
+   "label": "false positive rate (flagged but not readmitted)",
+   "value": 0.0771,
+   "n": 555,
+   "small_group": false,
+   "ci_95": [
+    0.0541,
+    0.1019
+   ]
+  },
+  "race.Unknown.fnr": {
+   "label": "false negative rate (readmitted but not flagged)",
+   "value": 0.8333,
+   "n": 555,
+   "small_group": false,
+   "ci_95": [
+    0.7072,
+    0.9487
+   ]
+  },
+  "race.Unknown.ppv": {
+   "label": "positive predictive value (flagged who were readmitted)",
+   "value": 0.1304,
+   "n": 555,
+   "small_group": false,
+   "ci_95": [
+    0.0408,
+    0.234
+   ]
+  },
+  "race.Unknown.auc_gap": {
+   "label": "gap in AUC (ranking accuracy, 0.5 = chance) vs the reference group (White)",
+   "value": 0.0074,
+   "n": 555,
+   "small_group": false,
+   "ci_95": [
+    -0.0767,
+    0.0942
+   ]
+  },
+  "race.Unknown.brier_gap": {
+   "label": "gap in Brier score (lower is better) vs the reference group (White)",
+   "value": -0.0209,
+   "n": 555,
+   "small_group": false,
+   "ci_95": [
+    -0.0366,
+    -0.0038
+   ]
+  },
+  "race.Unknown.o_e_gap": {
+   "label": "gap in observed / expected readmissions (1 = calibrated) vs the reference group (White)",
+   "value": -0.2371,
+   "n": 555,
+   "small_group": false,
+   "ci_95": [
+    -0.465,
+    0.0106
+   ]
+  },
+  "race.Unknown.flag_rate_gap": {
+   "label": "gap in share flagged for follow-up vs the reference group (White)",
+   "value": -0.023,
+   "n": 555,
+   "small_group": false,
+   "ci_95": [
+    -0.0437,
+    0.0022
+   ]
+  },
+  "race.Unknown.fpr_gap": {
+   "label": "gap in false positive rate (flagged but not readmitted) vs the reference group (White)",
+   "value": -0.017,
+   "n": 555,
+   "small_group": false,
+   "ci_95": [
+    -0.0388,
+    0.0083
+   ]
+  },
+  "race.Unknown.fnr_gap": {
+   "label": "gap in false negative rate (readmitted but not flagged) vs the reference group (White)",
+   "value": 0.0564,
+   "n": 555,
+   "small_group": false,
+   "ci_95": [
+    -0.0734,
+    0.1755
+   ]
+  },
+  "race.Unknown.ppv_gap": {
+   "label": "gap in positive predictive value (flagged who were readmitted) vs the reference group (White)",
+   "value": -0.0636,
+   "n": 555,
+   "small_group": false,
+   "ci_95": [
+    -0.1594,
+    0.0377
+   ]
+  },
+  "race.White.n": {
+   "label": "patients",
+   "value": 15614,
+   "n": 15614,
+   "small_group": false
+  },
+  "race.White.n_pos": {
+   "label": "readmitted patients",
+   "value": 1439,
+   "n": 15614,
+   "small_group": false
+  },
+  "race.White.prevalence": {
+   "label": "readmission rate",
+   "value": 0.0922,
+   "n": 15614,
+   "small_group": false,
+   "ci_95": [
+    0.0876,
+    0.0965
+   ]
+  },
+  "race.White.auc": {
+   "label": "AUC (ranking accuracy, 0.5 = chance)",
+   "value": 0.6401,
+   "n": 15614,
+   "small_group": false,
+   "ci_95": [
+    0.6271,
+    0.6548
+   ]
+  },
+  "race.White.brier": {
+   "label": "Brier score (lower is better)",
+   "value": 0.0819,
+   "n": 15614,
+   "small_group": false,
+   "ci_95": [
+    0.0783,
+    0.0855
+   ]
+  },
+  "race.White.o_e": {
+   "label": "observed / expected readmissions (1 = calibrated)",
+   "value": 1.0022,
+   "n": 15614,
+   "small_group": false,
+   "ci_95": [
+    0.9528,
+    1.0482
+   ]
+  },
+  "race.White.flag_rate": {
+   "label": "share flagged for follow-up",
+   "value": 0.1059,
+   "n": 15614,
+   "small_group": false,
+   "ci_95": [
+    0.1013,
+    0.1107
+   ]
+  },
+  "race.White.fpr": {
+   "label": "false positive rate (flagged but not readmitted)",
+   "value": 0.094,
+   "n": 15614,
+   "small_group": false,
+   "ci_95": [
+    0.0891,
+    0.0987
+   ]
+  },
+  "race.White.fnr": {
+   "label": "false negative rate (readmitted but not flagged)",
+   "value": 0.7769,
+   "n": 15614,
+   "small_group": false,
+   "ci_95": [
+    0.7537,
+    0.7969
+   ]
+  },
+  "race.White.ppv": {
+   "label": "positive predictive value (flagged who were readmitted)",
+   "value": 0.1941,
+   "n": 15614,
+   "small_group": false,
+   "ci_95": [
+    0.1766,
+    0.2137
+   ]
+  },
+  "sex.Female.n": {
+   "label": "patients",
+   "value": 11172,
+   "n": 11172,
+   "small_group": false
+  },
+  "sex.Female.n_pos": {
+   "label": "readmitted patients",
+   "value": 1008,
+   "n": 11172,
+   "small_group": false
+  },
+  "sex.Female.prevalence": {
+   "label": "readmission rate",
+   "value": 0.0902,
+   "n": 11172,
+   "small_group": false,
+   "ci_95": [
+    0.0847,
+    0.0958
+   ]
+  },
+  "sex.Female.auc": {
+   "label": "AUC (ranking accuracy, 0.5 = chance)",
+   "value": 0.6408,
+   "n": 11172,
+   "small_group": false,
+   "ci_95": [
+    0.6227,
+    0.6581
+   ]
+  },
+  "sex.Female.brier": {
+   "label": "Brier score (lower is better)",
+   "value": 0.0803,
+   "n": 11172,
+   "small_group": false,
+   "ci_95": [
+    0.0758,
+    0.0845
+   ]
+  },
+  "sex.Female.o_e": {
+   "label": "observed / expected readmissions (1 = calibrated)",
+   "value": 0.9874,
+   "n": 11172,
+   "small_group": false,
+   "ci_95": [
+    0.9272,
+    1.0435
+   ]
+  },
+  "sex.Female.flag_rate": {
+   "label": "share flagged for follow-up",
+   "value": 0.1079,
+   "n": 11172,
+   "small_group": false,
+   "ci_95": [
+    0.1018,
+    0.1136
+   ]
+  },
+  "sex.Female.fpr": {
+   "label": "false positive rate (flagged but not readmitted)",
+   "value": 0.0956,
+   "n": 11172,
+   "small_group": false,
+   "ci_95": [
+    0.0896,
+    0.1017
+   ]
+  },
+  "sex.Female.fnr": {
+   "label": "false negative rate (readmitted but not flagged)",
+   "value": 0.7688,
+   "n": 11172,
+   "small_group": false,
+   "ci_95": [
+    0.7451,
+    0.795
+   ]
+  },
+  "sex.Female.ppv": {
+   "label": "positive predictive value (flagged who were readmitted)",
+   "value": 0.1934,
+   "n": 11172,
+   "small_group": false,
+   "ci_95": [
+    0.1713,
+    0.215
+   ]
+  },
+  "sex.Male.n": {
+   "label": "patients",
+   "value": 9823,
+   "n": 9823,
+   "small_group": false
+  },
+  "sex.Male.n_pos": {
+   "label": "readmitted patients",
+   "value": 877,
+   "n": 9823,
+   "small_group": false
+  },
+  "sex.Male.prevalence": {
+   "label": "readmission rate",
+   "value": 0.0893,
+   "n": 9823,
+   "small_group": false,
+   "ci_95": [
+    0.0839,
+    0.0952
+   ]
+  },
+  "sex.Male.auc": {
+   "label": "AUC (ranking accuracy, 0.5 = chance)",
+   "value": 0.6467,
+   "n": 9823,
+   "small_group": false,
+   "ci_95": [
+    0.6276,
+    0.6647
+   ]
+  },
+  "sex.Male.brier": {
+   "label": "Brier score (lower is better)",
+   "value": 0.0796,
+   "n": 9823,
+   "small_group": false,
+   "ci_95": [
+    0.0754,
+    0.0842
+   ]
+  },
+  "sex.Male.o_e": {
+   "label": "observed / expected readmissions (1 = calibrated)",
+   "value": 1.0122,
+   "n": 9823,
+   "small_group": false,
+   "ci_95": [
+    0.9518,
+    1.079
+   ]
+  },
+  "sex.Male.flag_rate": {
+   "label": "share flagged for follow-up",
+   "value": 0.0889,
+   "n": 9823,
+   "small_group": false,
+   "ci_95": [
+    0.0833,
+    0.0942
+   ]
+  },
+  "sex.Male.fpr": {
+   "label": "false positive rate (flagged but not readmitted)",
+   "value": 0.078,
+   "n": 9823,
+   "small_group": false,
+   "ci_95": [
+    0.0722,
+    0.0833
+   ]
+  },
+  "sex.Male.fnr": {
+   "label": "false negative rate (readmitted but not flagged)",
+   "value": 0.8005,
+   "n": 9823,
+   "small_group": false,
+   "ci_95": [
+    0.7735,
+    0.8262
+   ]
+  },
+  "sex.Male.ppv": {
+   "label": "positive predictive value (flagged who were readmitted)",
+   "value": 0.2005,
+   "n": 9823,
+   "small_group": false,
+   "ci_95": [
+    0.1748,
+    0.2278
+   ]
+  },
+  "sex.Male.auc_gap": {
+   "label": "gap in AUC (ranking accuracy, 0.5 = chance) vs the reference group (Female)",
+   "value": 0.0059,
+   "n": 9823,
+   "small_group": false,
+   "ci_95": [
+    -0.0194,
+    0.0307
+   ]
+  },
+  "sex.Male.brier_gap": {
+   "label": "gap in Brier score (lower is better) vs the reference group (Female)",
+   "value": -0.0007,
+   "n": 9823,
+   "small_group": false,
+   "ci_95": [
+    -0.0064,
+    0.0055
+   ]
+  },
+  "sex.Male.o_e_gap": {
+   "label": "gap in observed / expected readmissions (1 = calibrated) vs the reference group (Female)",
+   "value": 0.0247,
+   "n": 9823,
+   "small_group": false,
+   "ci_95": [
+    -0.0569,
+    0.1139
+   ]
+  },
+  "sex.Male.flag_rate_gap": {
+   "label": "gap in share flagged for follow-up vs the reference group (Female)",
+   "value": -0.019,
+   "n": 9823,
+   "small_group": false,
+   "ci_95": [
+    -0.0272,
+    -0.011
+   ]
+  },
+  "sex.Male.fpr_gap": {
+   "label": "gap in false positive rate (flagged but not readmitted) vs the reference group (Female)",
+   "value": -0.0176,
+   "n": 9823,
+   "small_group": false,
+   "ci_95": [
+    -0.0262,
+    -0.0095
+   ]
+  },
+  "sex.Male.fnr_gap": {
+   "label": "gap in false negative rate (readmitted but not flagged) vs the reference group (Female)",
+   "value": 0.0316,
+   "n": 9823,
+   "small_group": false,
+   "ci_95": [
+    -0.007,
+    0.0674
+   ]
+  },
+  "sex.Male.ppv_gap": {
+   "label": "gap in positive predictive value (flagged who were readmitted) vs the reference group (Female)",
+   "value": 0.0071,
+   "n": 9823,
+   "small_group": false,
+   "ci_95": [
+    -0.0264,
+    0.0432
+   ]
+  },
+  "sex.Unknown.n": {
+   "label": "patients",
+   "value": 2,
+   "n": 2,
+   "small_group": true
+  },
+  "sex.Unknown.n_pos": {
+   "label": "readmitted patients",
+   "value": 0.0,
+   "n": 2,
+   "small_group": true
+  },
+  "sex.Unknown.prevalence": {
+   "label": "readmission rate",
+   "value": 0.0,
+   "n": 2,
+   "small_group": true,
+   "ci_95": [
+    0.0,
+    0.0
+   ]
+  },
+  "sex.Unknown.auc": {
+   "label": "AUC (ranking accuracy, 0.5 = chance)",
+   "value": null,
+   "n": 2,
+   "small_group": true
+  },
+  "sex.Unknown.brier": {
+   "label": "Brier score (lower is better)",
+   "value": 0.0485,
+   "n": 2,
+   "small_group": true,
+   "ci_95": [
+    0.0036,
+    0.0934
+   ]
+  },
+  "sex.Unknown.o_e": {
+   "label": "observed / expected readmissions (1 = calibrated)",
+   "value": 0.0,
+   "n": 2,
+   "small_group": true,
+   "ci_95": [
+    0.0,
+    0.0
+   ]
+  },
+  "sex.Unknown.flag_rate": {
+   "label": "share flagged for follow-up",
+   "value": 0.5,
+   "n": 2,
+   "small_group": true,
+   "ci_95": [
+    0.0,
+    1
+   ]
+  },
+  "sex.Unknown.fpr": {
+   "label": "false positive rate (flagged but not readmitted)",
+   "value": 0.5,
+   "n": 2,
+   "small_group": true,
+   "ci_95": [
+    0.0,
+    1
+   ]
+  },
+  "sex.Unknown.fnr": {
+   "label": "false negative rate (readmitted but not flagged)",
+   "value": null,
+   "n": 2,
+   "small_group": true
+  },
+  "sex.Unknown.ppv": {
+   "label": "positive predictive value (flagged who were readmitted)",
+   "value": 0.0,
+   "n": 2,
+   "small_group": true,
+   "ci_95": [
+    0.0,
+    0.0
+   ]
+  },
+  "sex.Unknown.auc_gap": {
+   "label": "gap in AUC (ranking accuracy, 0.5 = chance) vs the reference group (Female)",
+   "value": null,
+   "n": 2,
+   "small_group": true
+  },
+  "sex.Unknown.brier_gap": {
+   "label": "gap in Brier score (lower is better) vs the reference group (Female)",
+   "value": -0.0318,
+   "n": 2,
+   "small_group": true,
+   "ci_95": [
+    -0.0797,
+    0.0157
+   ]
+  },
+  "sex.Unknown.o_e_gap": {
+   "label": "gap in observed / expected readmissions (1 = calibrated) vs the reference group (Female)",
+   "value": -0.9874,
+   "n": 2,
+   "small_group": true,
+   "ci_95": [
+    -1.0435,
+    -0.9272
+   ]
+  },
+  "sex.Unknown.flag_rate_gap": {
+   "label": "gap in share flagged for follow-up vs the reference group (Female)",
+   "value": 0.3921,
+   "n": 2,
+   "small_group": true,
+   "ci_95": [
+    -0.1119,
+    0.8962
+   ]
+  },
+  "sex.Unknown.fpr_gap": {
+   "label": "gap in false positive rate (flagged but not readmitted) vs the reference group (Female)",
+   "value": 0.4044,
+   "n": 2,
+   "small_group": true,
+   "ci_95": [
+    -0.0994,
+    0.9084
+   ]
+  },
+  "sex.Unknown.fnr_gap": {
+   "label": "gap in false negative rate (readmitted but not flagged) vs the reference group (Female)",
+   "value": null,
+   "n": 2,
+   "small_group": true
+  },
+  "sex.Unknown.ppv_gap": {
+   "label": "gap in positive predictive value (flagged who were readmitted) vs the reference group (Female)",
+   "value": -0.1934,
+   "n": 2,
+   "small_group": true,
+   "ci_95": [
+    -0.2148,
+    -0.1711
+   ]
+  },
+  "age_band.50-59.n": {
+   "label": "patients",
+   "value": 3701,
+   "n": 3701,
+   "small_group": false
+  },
+  "age_band.50-59.n_pos": {
+   "label": "readmitted patients",
+   "value": 271,
+   "n": 3701,
+   "small_group": false
+  },
+  "age_band.50-59.prevalence": {
+   "label": "readmission rate",
+   "value": 0.0732,
+   "n": 3701,
+   "small_group": false,
+   "ci_95": [
+    0.0648,
+    0.0811
+   ]
+  },
+  "age_band.50-59.auc": {
+   "label": "AUC (ranking accuracy, 0.5 = chance)",
+   "value": 0.6627,
+   "n": 3701,
+   "small_group": false,
+   "ci_95": [
+    0.6272,
+    0.6987
+   ]
+  },
+  "age_band.50-59.brier": {
+   "label": "Brier score (lower is better)",
+   "value": 0.066,
+   "n": 3701,
+   "small_group": false,
+   "ci_95": [
+    0.059,
+    0.0726
+   ]
+  },
+  "age_band.50-59.o_e": {
+   "label": "observed / expected readmissions (1 = calibrated)",
+   "value": 1.0357,
+   "n": 3701,
+   "small_group": false,
+   "ci_95": [
+    0.9177,
+    1.141
+   ]
+  },
+  "age_band.50-59.flag_rate": {
+   "label": "share flagged for follow-up",
+   "value": 0.0465,
+   "n": 3701,
+   "small_group": false,
+   "ci_95": [
+    0.0397,
+    0.0538
+   ]
+  },
+  "age_band.50-59.fpr": {
+   "label": "false positive rate (flagged but not readmitted)",
+   "value": 0.0385,
+   "n": 3701,
+   "small_group": false,
+   "ci_95": [
+    0.032,
+    0.0456
+   ]
+  },
+  "age_band.50-59.fnr": {
+   "label": "false negative rate (readmitted but not flagged)",
+   "value": 0.8524,
+   "n": 3701,
+   "small_group": false,
+   "ci_95": [
+    0.8076,
+    0.8923
+   ]
+  },
+  "age_band.50-59.ppv": {
+   "label": "positive predictive value (flagged who were readmitted)",
+   "value": 0.2326,
+   "n": 3701,
+   "small_group": false,
+   "ci_95": [
+    0.1703,
+    0.3007
+   ]
+  },
+  "age_band.50-59.auc_gap": {
+   "label": "gap in AUC (ranking accuracy, 0.5 = chance) vs the reference group (70-79)",
+   "value": 0.0481,
+   "n": 3701,
+   "small_group": false,
+   "ci_95": [
+    0.0055,
+    0.0935
+   ]
+  },
+  "age_band.50-59.brier_gap": {
+   "label": "gap in Brier score (lower is better) vs the reference group (70-79)",
+   "value": -0.0218,
+   "n": 3701,
+   "small_group": false,
+   "ci_95": [
+    -0.0314,
+    -0.0127
+   ]
+  },
+  "age_band.50-59.o_e_gap": {
+   "label": "gap in observed / expected readmissions (1 = calibrated) vs the reference group (70-79)",
+   "value": 0.0809,
+   "n": 3701,
+   "small_group": false,
+   "ci_95": [
+    -0.0612,
+    0.2193
+   ]
+  },
+  "age_band.50-59.flag_rate_gap": {
+   "label": "gap in share flagged for follow-up vs the reference group (70-79)",
+   "value": -0.1007,
+   "n": 3701,
+   "small_group": false,
+   "ci_95": [
+    -0.1122,
+    -0.0889
+   ]
+  },
+  "age_band.50-59.fpr_gap": {
+   "label": "gap in false positive rate (flagged but not readmitted) vs the reference group (70-79)",
+   "value": -0.0968,
+   "n": 3701,
+   "small_group": false,
+   "ci_95": [
+    -0.1082,
+    -0.0852
+   ]
+  },
+  "age_band.50-59.fnr_gap": {
+   "label": "gap in false negative rate (readmitted but not flagged) vs the reference group (70-79)",
+   "value": 0.1077,
+   "n": 3701,
+   "small_group": false,
+   "ci_95": [
+    0.0516,
+    0.166
+   ]
+  },
+  "age_band.50-59.ppv_gap": {
+   "label": "gap in positive predictive value (flagged who were readmitted) vs the reference group (70-79)",
+   "value": 0.0605,
+   "n": 3701,
+   "small_group": false,
+   "ci_95": [
+    -0.0082,
+    0.1288
+   ]
+  },
+  "age_band.60-69.n": {
+   "label": "patients",
+   "value": 4711,
+   "n": 4711,
+   "small_group": false
+  },
+  "age_band.60-69.n_pos": {
+   "label": "readmitted patients",
+   "value": 413,
+   "n": 4711,
+   "small_group": false
+  },
+  "age_band.60-69.prevalence": {
+   "label": "readmission rate",
+   "value": 0.0877,
+   "n": 4711,
+   "small_group": false,
+   "ci_95": [
+    0.0798,
+    0.0957
+   ]
+  },
+  "age_band.60-69.auc": {
+   "label": "AUC (ranking accuracy, 0.5 = chance)",
+   "value": 0.6677,
+   "n": 4711,
+   "small_group": false,
+   "ci_95": [
+    0.6395,
+    0.6935
+   ]
+  },
+  "age_band.60-69.brier": {
+   "label": "Brier score (lower is better)",
+   "value": 0.077,
+   "n": 4711,
+   "small_group": false,
+   "ci_95": [
+    0.0708,
+    0.0835
+   ]
+  },
+  "age_band.60-69.o_e": {
+   "label": "observed / expected readmissions (1 = calibrated)",
+   "value": 0.9488,
+   "n": 4711,
+   "small_group": false,
+   "ci_95": [
+    0.8641,
+    1.0419
+   ]
+  },
+  "age_band.60-69.flag_rate": {
+   "label": "share flagged for follow-up",
+   "value": 0.0942,
+   "n": 4711,
+   "small_group": false,
+   "ci_95": [
+    0.086,
+    0.1027
+   ]
+  },
+  "age_band.60-69.fpr": {
+   "label": "false positive rate (flagged but not readmitted)",
+   "value": 0.0775,
+   "n": 4711,
+   "small_group": false,
+   "ci_95": [
+    0.0698,
+    0.0857
+   ]
+  },
+  "age_band.60-69.fnr": {
+   "label": "false negative rate (readmitted but not flagged)",
+   "value": 0.7312,
+   "n": 4711,
+   "small_group": false,
+   "ci_95": [
+    0.6889,
+    0.7795
+   ]
+  },
+  "age_band.60-69.ppv": {
+   "label": "positive predictive value (flagged who were readmitted)",
+   "value": 0.25,
+   "n": 4711,
+   "small_group": false,
+   "ci_95": [
+    0.2079,
+    0.2897
+   ]
+  },
+  "age_band.60-69.auc_gap": {
+   "label": "gap in AUC (ranking accuracy, 0.5 = chance) vs the reference group (70-79)",
+   "value": 0.0531,
+   "n": 4711,
+   "small_group": false,
+   "ci_95": [
+    0.0155,
+    0.0927
+   ]
+  },
+  "age_band.60-69.brier_gap": {
+   "label": "gap in Brier score (lower is better) vs the reference group (70-79)",
+   "value": -0.0107,
+   "n": 4711,
+   "small_group": false,
+   "ci_95": [
+    -0.0195,
+    -0.0025
+   ]
+  },
+  "age_band.60-69.o_e_gap": {
+   "label": "gap in observed / expected readmissions (1 = calibrated) vs the reference group (70-79)",
+   "value": -0.0061,
+   "n": 4711,
+   "small_group": false,
+   "ci_95": [
+    -0.1239,
+    0.1084
+   ]
+  },
+  "age_band.60-69.flag_rate_gap": {
+   "label": "gap in share flagged for follow-up vs the reference group (70-79)",
+   "value": -0.0529,
+   "n": 4711,
+   "small_group": false,
+   "ci_95": [
+    -0.0663,
+    -0.0404
+   ]
+  },
+  "age_band.60-69.fpr_gap": {
+   "label": "gap in false positive rate (flagged but not readmitted) vs the reference group (70-79)",
+   "value": -0.0578,
+   "n": 4711,
+   "small_group": false,
+   "ci_95": [
+    -0.0705,
+    -0.0455
+   ]
+  },
+  "age_band.60-69.fnr_gap": {
+   "label": "gap in false negative rate (readmitted but not flagged) vs the reference group (70-79)",
+   "value": -0.0135,
+   "n": 4711,
+   "small_group": false,
+   "ci_95": [
+    -0.0714,
+    0.0473
+   ]
+  },
+  "age_band.60-69.ppv_gap": {
+   "label": "gap in positive predictive value (flagged who were readmitted) vs the reference group (70-79)",
+   "value": 0.0779,
+   "n": 4711,
+   "small_group": false,
+   "ci_95": [
+    0.0298,
+    0.1265
+   ]
+  },
+  "age_band.70-79.n": {
+   "label": "patients",
+   "value": 5252,
+   "n": 5252,
+   "small_group": false
+  },
+  "age_band.70-79.n_pos": {
+   "label": "readmitted patients",
+   "value": 521,
+   "n": 5252,
+   "small_group": false
+  },
+  "age_band.70-79.prevalence": {
+   "label": "readmission rate",
+   "value": 0.0992,
+   "n": 5252,
+   "small_group": false,
+   "ci_95": [
+    0.091,
+    0.1074
+   ]
+  },
+  "age_band.70-79.auc": {
+   "label": "AUC (ranking accuracy, 0.5 = chance)",
+   "value": 0.6146,
+   "n": 5252,
+   "small_group": false,
+   "ci_95": [
+    0.5882,
+    0.6387
+   ]
+  },
+  "age_band.70-79.brier": {
+   "label": "Brier score (lower is better)",
+   "value": 0.0878,
+   "n": 5252,
+   "small_group": false,
+   "ci_95": [
+    0.0817,
+    0.094
+   ]
+  },
+  "age_band.70-79.o_e": {
+   "label": "observed / expected readmissions (1 = calibrated)",
+   "value": 0.9549,
+   "n": 5252,
+   "small_group": false,
+   "ci_95": [
+    0.877,
+    1.0346
+   ]
+  },
+  "age_band.70-79.flag_rate": {
+   "label": "share flagged for follow-up",
+   "value": 0.1472,
+   "n": 5252,
+   "small_group": false,
+   "ci_95": [
+    0.138,
+    0.1561
+   ]
+  },
+  "age_band.70-79.fpr": {
+   "label": "false positive rate (flagged but not readmitted)",
+   "value": 0.1353,
+   "n": 5252,
+   "small_group": false,
+   "ci_95": [
+    0.1263,
+    0.1448
+   ]
+  },
+  "age_band.70-79.fnr": {
+   "label": "false negative rate (readmitted but not flagged)",
+   "value": 0.7447,
+   "n": 5252,
+   "small_group": false,
+   "ci_95": [
+    0.7073,
+    0.7799
+   ]
+  },
+  "age_band.70-79.ppv": {
+   "label": "positive predictive value (flagged who were readmitted)",
+   "value": 0.1721,
+   "n": 5252,
+   "small_group": false,
+   "ci_95": [
+    0.1447,
+    0.1995
+   ]
+  },
+  "age_band.80+.n": {
+   "label": "patients",
+   "value": 3886,
+   "n": 3886,
+   "small_group": false
+  },
+  "age_band.80+.n_pos": {
+   "label": "readmitted patients",
+   "value": 418,
+   "n": 3886,
+   "small_group": false
+  },
+  "age_band.80+.prevalence": {
+   "label": "readmission rate",
+   "value": 0.1076,
+   "n": 3886,
+   "small_group": false,
+   "ci_95": [
+    0.0975,
+    0.1173
+   ]
+  },
+  "age_band.80+.auc": {
+   "label": "AUC (ranking accuracy, 0.5 = chance)",
+   "value": 0.5834,
+   "n": 3886,
+   "small_group": false,
+   "ci_95": [
+    0.5566,
+    0.6126
+   ]
+  },
+  "age_band.80+.brier": {
+   "label": "Brier score (lower is better)",
+   "value": 0.0959,
+   "n": 3886,
+   "small_group": false,
+   "ci_95": [
+    0.0883,
+    0.1034
+   ]
+  },
+  "age_band.80+.o_e": {
+   "label": "observed / expected readmissions (1 = calibrated)",
+   "value": 1.0354,
+   "n": 3886,
+   "small_group": false,
+   "ci_95": [
+    0.9403,
+    1.1318
+   ]
+  },
+  "age_band.80+.flag_rate": {
+   "label": "share flagged for follow-up",
+   "value": 0.1397,
+   "n": 3886,
+   "small_group": false,
+   "ci_95": [
+    0.1294,
+    0.15
+   ]
+  },
+  "age_band.80+.fpr": {
+   "label": "false positive rate (flagged but not readmitted)",
+   "value": 0.1306,
+   "n": 3886,
+   "small_group": false,
+   "ci_95": [
+    0.1201,
+    0.141
+   ]
+  },
+  "age_band.80+.fnr": {
+   "label": "false negative rate (readmitted but not flagged)",
+   "value": 0.7847,
+   "n": 3886,
+   "small_group": false,
+   "ci_95": [
+    0.7471,
+    0.8215
+   ]
+  },
+  "age_band.80+.ppv": {
+   "label": "positive predictive value (flagged who were readmitted)",
+   "value": 0.1657,
+   "n": 3886,
+   "small_group": false,
+   "ci_95": [
+    0.1372,
+    0.1969
+   ]
+  },
+  "age_band.80+.auc_gap": {
+   "label": "gap in AUC (ranking accuracy, 0.5 = chance) vs the reference group (70-79)",
+   "value": -0.0312,
+   "n": 3886,
+   "small_group": false,
+   "ci_95": [
+    -0.0673,
+    0.0114
+   ]
+  },
+  "age_band.80+.brier_gap": {
+   "label": "gap in Brier score (lower is better) vs the reference group (70-79)",
+   "value": 0.0081,
+   "n": 3886,
+   "small_group": false,
+   "ci_95": [
+    -0.0015,
+    0.0179
+   ]
+  },
+  "age_band.80+.o_e_gap": {
+   "label": "gap in observed / expected readmissions (1 = calibrated) vs the reference group (70-79)",
+   "value": 0.0805,
+   "n": 3886,
+   "small_group": false,
+   "ci_95": [
+    -0.0418,
+    0.2026
+   ]
+  },
+  "age_band.80+.flag_rate_gap": {
+   "label": "gap in share flagged for follow-up vs the reference group (70-79)",
+   "value": -0.0074,
+   "n": 3886,
+   "small_group": false,
+   "ci_95": [
+    -0.0215,
+    0.0067
+   ]
+  },
+  "age_band.80+.fpr_gap": {
+   "label": "gap in false positive rate (flagged but not readmitted) vs the reference group (70-79)",
+   "value": -0.0047,
+   "n": 3886,
+   "small_group": false,
+   "ci_95": [
+    -0.0199,
+    0.0093
+   ]
+  },
+  "age_band.80+.fnr_gap": {
+   "label": "gap in false negative rate (readmitted but not flagged) vs the reference group (70-79)",
+   "value": 0.04,
+   "n": 3886,
+   "small_group": false,
+   "ci_95": [
+    -0.0136,
+    0.0932
+   ]
+  },
+  "age_band.80+.ppv_gap": {
+   "label": "gap in positive predictive value (flagged who were readmitted) vs the reference group (70-79)",
+   "value": -0.0063,
+   "n": 3886,
+   "small_group": false,
+   "ci_95": [
+    -0.0439,
+    0.0338
+   ]
+  },
+  "age_band.<50.n": {
+   "label": "patients",
+   "value": 3447,
+   "n": 3447,
+   "small_group": false
+  },
+  "age_band.<50.n_pos": {
+   "label": "readmitted patients",
+   "value": 262,
+   "n": 3447,
+   "small_group": false
+  },
+  "age_band.<50.prevalence": {
+   "label": "readmission rate",
+   "value": 0.076,
+   "n": 3447,
+   "small_group": false,
+   "ci_95": [
+    0.0676,
+    0.0859
+   ]
+  },
+  "age_band.<50.auc": {
+   "label": "AUC (ranking accuracy, 0.5 = chance)",
+   "value": 0.6657,
+   "n": 3447,
+   "small_group": false,
+   "ci_95": [
+    0.629,
+    0.7011
+   ]
+  },
+  "age_band.<50.brier": {
+   "label": "Brier score (lower is better)",
+   "value": 0.069,
+   "n": 3447,
+   "small_group": false,
+   "ci_95": [
+    0.0617,
+    0.0768
+   ]
+  },
+  "age_band.<50.o_e": {
+   "label": "observed / expected readmissions (1 = calibrated)",
+   "value": 1.0854,
+   "n": 3447,
+   "small_group": false,
+   "ci_95": [
+    0.9697,
+    1.2244
+   ]
+  },
+  "age_band.<50.flag_rate": {
+   "label": "share flagged for follow-up",
+   "value": 0.0426,
+   "n": 3447,
+   "small_group": false,
+   "ci_95": [
+    0.036,
+    0.0493
+   ]
+  },
+  "age_band.<50.fpr": {
+   "label": "false positive rate (flagged but not readmitted)",
+   "value": 0.0355,
+   "n": 3447,
+   "small_group": false,
+   "ci_95": [
+    0.0292,
+    0.0418
+   ]
+  },
+  "age_band.<50.fnr": {
+   "label": "false negative rate (readmitted but not flagged)",
+   "value": 0.8702,
+   "n": 3447,
+   "small_group": false,
+   "ci_95": [
+    0.8258,
+    0.9098
+   ]
+  },
+  "age_band.<50.ppv": {
+   "label": "positive predictive value (flagged who were readmitted)",
+   "value": 0.2313,
+   "n": 3447,
+   "small_group": false,
+   "ci_95": [
+    0.1655,
+    0.3007
+   ]
+  },
+  "age_band.<50.auc_gap": {
+   "label": "gap in AUC (ranking accuracy, 0.5 = chance) vs the reference group (70-79)",
+   "value": 0.0511,
+   "n": 3447,
+   "small_group": false,
+   "ci_95": [
+    0.0071,
+    0.0961
+   ]
+  },
+  "age_band.<50.brier_gap": {
+   "label": "gap in Brier score (lower is better) vs the reference group (70-79)",
+   "value": -0.0187,
+   "n": 3447,
+   "small_group": false,
+   "ci_95": [
+    -0.0285,
+    -0.0093
+   ]
+  },
+  "age_band.<50.o_e_gap": {
+   "label": "gap in observed / expected readmissions (1 = calibrated) vs the reference group (70-79)",
+   "value": 0.1306,
+   "n": 3447,
+   "small_group": false,
+   "ci_95": [
+    -0.0129,
+    0.282
+   ]
+  },
+  "age_band.<50.flag_rate_gap": {
+   "label": "gap in share flagged for follow-up vs the reference group (70-79)",
+   "value": -0.1045,
+   "n": 3447,
+   "small_group": false,
+   "ci_95": [
+    -0.116,
+    -0.0933
+   ]
+  },
+  "age_band.<50.fpr_gap": {
+   "label": "gap in false positive rate (flagged but not readmitted) vs the reference group (70-79)",
+   "value": -0.0998,
+   "n": 3447,
+   "small_group": false,
+   "ci_95": [
+    -0.1116,
+    -0.0885
+   ]
+  },
+  "age_band.<50.fnr_gap": {
+   "label": "gap in false negative rate (readmitted but not flagged) vs the reference group (70-79)",
+   "value": 0.1255,
+   "n": 3447,
+   "small_group": false,
+   "ci_95": [
+    0.0707,
+    0.1813
+   ]
+  },
+  "age_band.<50.ppv_gap": {
+   "label": "gap in positive predictive value (flagged who were readmitted) vs the reference group (70-79)",
+   "value": 0.0592,
+   "n": 3447,
+   "small_group": false,
+   "ci_95": [
+    -0.0135,
+    0.1307
+   ]
+  },
+  "model.n_test": {
+   "label": "patients in the audited test set",
+   "value": 20997
+  },
+  "model.prevalence_test": {
+   "label": "readmission rate in the test set",
+   "value": 0.0898
+  },
+  "model.auc_test": {
+   "label": "overall AUC on the test set",
+   "value": 0.6434
+  },
+  "model.threshold": {
+   "label": "risk score at or above which a patient is flagged",
+   "value": 0.1465
+  },
+  "model.flag_share_test": {
+   "label": "share of test patients flagged",
+   "value": 0.099
+  },
+  "egfr.All.n": {
+   "value": 5505
+  },
+  "egfr.All.n_lower": {
+   "value": 111
+  },
+  "egfr.All.n_higher": {
+   "value": 684
+  },
+  "egfr.All.ckd_lt60_2009": {
+   "value": 2932
+  },
+  "egfr.All.ckd_lt60_2021": {
+   "value": 2877
+  },
+  "egfr.All.referral_lt30_2009": {
+   "value": 2436
+  },
+  "egfr.All.referral_lt30_2021": {
+   "value": 2404
+  },
+  "egfr.All.waitlist_le20_2009": {
+   "value": 1202
+  },
+  "egfr.All.waitlist_le20_2021": {
+   "value": 1000
+  },
+  "egfr.All.waitlist_le20_newly_below": {
+   "value": 29
+  },
+  "egfr.All.waitlist_le20_newly_above": {
+   "value": 231
+  },
+  "egfr.Black.n": {
+   "value": 542
+  },
+  "egfr.Black.n_lower": {
+   "value": 111
+  },
+  "egfr.Black.n_higher": {
+   "value": 0.0
+  },
+  "egfr.Black.ckd_lt60_2009": {
+   "value": 268
+  },
+  "egfr.Black.ckd_lt60_2021": {
+   "value": 280
+  },
+  "egfr.Black.referral_lt30_2009": {
+   "value": 207
+  },
+  "egfr.Black.referral_lt30_2021": {
+   "value": 232
+  },
+  "egfr.Black.waitlist_le20_2009": {
+   "value": 60
+  },
+  "egfr.Black.waitlist_le20_2021": {
+   "value": 89
+  },
+  "egfr.Black.waitlist_le20_newly_below": {
+   "value": 29
+  },
+  "egfr.Black.waitlist_le20_newly_above": {
+   "value": 0.0
+  },
+  "egfr.non-Black.n": {
+   "value": 4963
+  },
+  "egfr.non-Black.n_lower": {
+   "value": 0.0
+  },
+  "egfr.non-Black.n_higher": {
+   "value": 684
+  },
+  "egfr.non-Black.ckd_lt60_2009": {
+   "value": 2664
+  },
+  "egfr.non-Black.ckd_lt60_2021": {
+   "value": 2597
+  },
+  "egfr.non-Black.referral_lt30_2009": {
+   "value": 2229
+  },
+  "egfr.non-Black.referral_lt30_2021": {
+   "value": 2172
+  },
+  "egfr.non-Black.waitlist_le20_2009": {
+   "value": 1142
+  },
+  "egfr.non-Black.waitlist_le20_2021": {
+   "value": 911
+  },
+  "egfr.non-Black.waitlist_le20_newly_below": {
+   "value": 0.0
+  },
+  "egfr.non-Black.waitlist_le20_newly_above": {
+   "value": 231
+  }
+ }
+}
