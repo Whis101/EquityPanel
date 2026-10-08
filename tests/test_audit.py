@@ -138,10 +138,38 @@ def test_n_and_small_group_on_every_row(report):
 
 
 def test_min_group_size_moves_the_small_group_flag(frame):
-    rep = audit(frame, ["race"], T, n_boot=20, seed=0, min_group_size=10)
+    # Smallest outcome count is group C's 8 readmissions.
+    rep = audit(frame, ["race"], T, n_boot=20, seed=0, min_group_size=8)
     assert not rep.metrics["small_group"].any()
+    rep = audit(frame, ["race"], T, n_boot=20, seed=0, min_group_size=9)
+    assert rows(rep, "race", "C")["small_group"].all()
     rep = audit(frame, ["race"], T, n_boot=20, seed=0, min_group_size=81)
     assert rows(rep, "race", "B")["small_group"].all()
+
+
+def _with_group(n, n_pos, label="D"):
+    extra = pd.DataFrame(
+        {"y_true": [1] * n_pos + [0] * (n - n_pos), "y_score": 0.3, "race": label, "sex": "F"}
+    )
+    return pd.concat([make_frame(), extra], ignore_index=True)
+
+
+def test_large_group_with_few_readmissions_is_small():
+    # 500 patients but only 8 readmitted: FNR and PPV rest on 8 people.
+    rep = audit(_with_group(500, 8), ["race"], T, n_boot=20, seed=0)
+    d = rows(rep, "race", "D")
+    assert d.loc["n", "value"] == 500
+    assert d["small_group"].all()
+
+
+def test_large_group_with_few_non_readmissions_is_small():
+    rep = audit(_with_group(500, 492), ["race"], T, n_boot=20, seed=0)
+    assert rows(rep, "race", "D")["small_group"].all()
+
+
+def test_group_with_enough_of_both_outcomes_is_not_small():
+    rep = audit(_with_group(100, 40), ["race"], T, n_boot=20, seed=0)
+    assert not rows(rep, "race", "D")["small_group"].any()
 
 
 def test_group_values_are_strings():
