@@ -58,9 +58,17 @@ details summary { cursor: pointer; color: var(--accent); }
 <header>
   <h1>{{ title }}</h1>
   <div class="meta">{{ dataset }} · generated {{ generated }} · EquityPanel {{ version }}</div>
-  <p class="disclaimer"><strong>Auditing aid, not a clinical tool.</strong> This report describes
-  how a model's performance differs between groups. It does not certify a model as fair or safe,
-  and it was run on public or synthetic data only.</p>
+  <p class="disclaimer"><strong>Auditing aid for research and education, not a clinical
+  tool.</strong> This report measures how a model's performance differs between groups in the data
+  it was given; its numbers describe that dataset, not any individual. It is not medical advice,
+  has not been clinically validated, and must not be used to make or influence decisions about
+  individual patients. It does not certify a model as fair, safe or compliant.</p>
+  {% if tiny_groups %}
+  <p class="disclaimer"><strong>Very small groups:</strong> {{ tiny_groups | join("; ") }}. Each has
+  fewer than 11 patients, or fewer than 11 readmitted or not-readmitted patients, so its numbers
+  can reveal individual outcomes. If this report was built from real patient data, do not share
+  it outside your organization.</p>
+  {% endif %}
 </header>
 
 <section>
@@ -84,8 +92,12 @@ details summary { cursor: pointer; color: var(--accent); }
   {% elif summary.error %}
   <p class="muted">Summary not available: {{ summary.error }}.</p>
   {% else %}
-  <p class="verified">Written by {{ summary.model }} from the computed numbers only (no patient
-  data). Every number in each finding was checked against the audit's results.</p>
+  <p class="verified"><strong>AI-generated summary.</strong> An AI model wrote these findings from
+  the report's aggregate numbers only; it saw no individual patient records. Software confirmed
+  that each number it cites matches a value in the tables below. The wording, comparisons and
+  conclusions were not checked and may be wrong or misleading, and no person has reviewed this
+  summary. Rely on the tables, and have a qualified person review before acting on anything
+  here.</p>
   <ul class="findings">
   {% for f in summary.findings %}
     <li>{{ f.text }} <span class="ids">[{{ f.fact_ids | join(", ") }}]</span></li>
@@ -115,7 +127,8 @@ details summary { cursor: pointer; color: var(--accent); }
 <section id="{{ s.col }}">
   <h2>By {{ s.title | lower }}</h2>
   <p class="muted">Each cell shows the estimate and its 95% confidence interval. Gaps are
-  differences from the reference group, <strong>{{ s.reference }}</strong> (the largest).</p>
+  differences from the reference group, <strong>{{ s.reference }}</strong> (the largest); gaps in
+  rates are in percentage points (pts).</p>
   <div class="table-wrap">
   <table>
     <thead><tr><th>Group</th><th>Patients</th><th>Readmitted</th>
@@ -156,12 +169,13 @@ details summary { cursor: pointer; color: var(--accent); }
   published real-world studies; the sizes do not estimate real prevalence.</p>
   <p>Until 2021 the standard kidney-function formula (CKD-EPI 2009) multiplied a Black patient's
   result by 1.159, making their kidneys look healthier. Counts below are patients below each
-  clinical line under 2009 → under 2021.</p>
+  clinical line under 2009 → under 2021. The equations are computed only to count how this
+  cohort moves; they are not for estimating any individual's kidney function.</p>
   <figure style="margin:0">{{ egfr.chart | safe }}</figure>
   <div class="table-wrap">
   <table>
     <thead><tr><th>Group</th><th>Patients</th><th>Worse stage</th><th>Better stage</th>
-      <th>eGFR &lt; 60 (CKD)</th><th>eGFR &lt; 30 (referral)</th><th>eGFR ≤ 20 (waitlist)</th></tr></thead>
+      <th>eGFR &lt; 60 (CKD line)</th><th>eGFR &lt; 30 (common referral line)</th><th>eGFR ≤ 20 (transplant waiting-time line)</th></tr></thead>
     <tbody>
     {% for r in egfr.rows %}
       <tr><td>{{ r.group }}{% if r.kind == "race" %}<span class="badge">race</span>{% endif %}{% if r.small %}<span class="badge small">small group</span>{% endif %}</td>
@@ -186,6 +200,11 @@ details summary { cursor: pointer; color: var(--accent); }
     <dt>Reference group</dt><dd>The largest group in each column; gaps are group minus reference.</dd>
     <dt>Small groups</dt><dd>Flagged, not dropped, when they have fewer than 30 readmitted or
     fewer than 30 not-readmitted patients.</dd>
+    {% if summary and not summary.error %}
+    <dt>Summary model</dt><dd>{{ summary.model }} via the Anthropic API, given only aggregate
+    numbers ({{ summary.attempts }} attempt(s)). Small-cell suppression before sending:
+    {% if summary.min_cell %}on (groups or counts of 1 to {{ summary.min_cell - 1 }} removed){% else %}off (public data){% endif %}.</dd>
+    {% endif %}
     <dt>Metrics</dt><dd>AUC: how well scores rank readmitted above not-readmitted patients
     (0.5 = chance). Brier: average squared error of the risk (lower is better). O/E: observed ÷
     expected readmissions (1 = calibrated; above 1 = risk underestimated). FPR: flagged but not
@@ -204,6 +223,15 @@ details summary { cursor: pointer; color: var(--accent); }
   </details>
   {% endif %}
 </section>
+<footer class="muted" style="margin-top:48px;border-top:1px solid var(--line);padding-top:12px;font-size:0.8rem">
+  {% for credit in data_credits %}<p>{{ credit }}</p>{% endfor %}
+  <p>Generated by EquityPanel {{ version }}, an independent open-source project provided "as is"
+  under the MIT License, without warranty of any kind. Not affiliated with or endorsed by any
+  organization named in this report. If this report was built from real patient data, store and
+  share it only under your organization's data-governance rules, and never publish it, including
+  on GitHub Pages.</p>
+  {% if footer_note %}<p>{{ footer_note }}</p>{% endif %}
+</footer>
 </main>
 </body>
 </html>

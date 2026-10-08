@@ -86,6 +86,7 @@ class Summary:
     model: str = MODEL
     attempts: int = 0
     error: str | None = None
+    min_cell: int | None = None  # small-cell threshold applied to the payload; None = off
 
     @property
     def rejected_final(self) -> list[Rejected]:
@@ -102,6 +103,7 @@ class Summary:
             "model": self.model,
             "attempts": self.attempts,
             "error": self.error,
+            "min_cell": self.min_cell,
             "findings": [{"text": f.text, "fact_ids": list(f.fact_ids)} for f in self.findings],
             "rejected": [
                 {"text": r.text, "reason": r.reason, "attempt": r.attempt} for r in self.rejected
@@ -118,6 +120,7 @@ class Summary:
             model=data["model"],
             attempts=data["attempts"],
             error=data["error"],
+            min_cell=data.get("min_cell"),
         )
 
 
@@ -219,7 +222,9 @@ def summarise(facts_json: dict, client, *, retries: int = 1) -> Summary:
             "content": "Facts from the audit (JSON):\n" + json.dumps(facts_json, indent=1),
         }
     ]
-    summary = Summary()
+    summary = Summary(
+        min_cell=facts_json["context"].get("small_cell_suppression", {}).get("min_cell")
+    )
     for attempt in range(retries + 1):
         summary.attempts = attempt + 1
         response, raw, error = _ask(client, messages)

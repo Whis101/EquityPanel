@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "equitypanel"
 dynamic = ["version"]
-description = "Audit clinical risk models for performance gaps across demographic groups."
+description = "Measure performance gaps of clinical risk models across demographic groups. For research and education; not for clinical use."
 readme = "README.md"
 requires-python = ">=3.11"
 license = "MIT"
