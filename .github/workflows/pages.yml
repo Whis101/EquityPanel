@@ -1,0 +1,45 @@
+name: Pages
+
+# Publishes the committed site/ folder (the finished UCI audit report) to GitHub Pages.
+# Nothing is built here: no data and no API key are needed in CI.
+on:
+  push:
+    branches: [main]
+    paths:
+      - "site/**"
+      - ".github/workflows/pages.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Check the site holds no data files
+        run: |
+          found=$(find site -type f ! -name '*.html' ! -name '.nojekyll' || true)
+          if [ -n "$found" ]; then
+            echo "::error::site/ may only contain HTML:"
+            echo "$found"
+            exit 1
+          fi
+
+      - uses: actions/configure-pages@v6
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: site
+      - id: deployment
+        uses: actions/deploy-pages@v5

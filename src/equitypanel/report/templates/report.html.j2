@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{ title }}</title>
+<style>
+:root {
+  --bg: #fcfcfb; --surface: #ffffff; --text: #0b0b0b; --muted: #52514e; --line: #e4e3df;
+  --accent: #2a78d6; --warn-bg: #fff4e0; --warn-text: #7a4b00; --ok-bg: #e8f3ec; --bad-bg: #fde8e8;
+}
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #1a1a19; --surface: #242423; --text: #ffffff; --muted: #c3c2b7; --line: #3a3a38;
+          --accent: #3987e5; --warn-bg: #3a2c10; --warn-text: #f5c56b; --ok-bg: #1d3326; --bad-bg: #3d1f1f; }
+  svg { background: #ffffff; border-radius: 6px; }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text);
+       font: 15px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+main { max-width: 1080px; margin: 0 auto; padding: 24px 16px 64px; }
+h1 { font-size: 1.7rem; margin: 0 0 4px; }
+h2 { font-size: 1.3rem; margin: 40px 0 8px; padding-top: 8px; border-top: 1px solid var(--line); }
+h3 { font-size: 1rem; margin: 20px 0 8px; }
+.meta, .muted { color: var(--muted); font-size: 0.9rem; }
+.disclaimer { background: var(--warn-bg); color: var(--warn-text); padding: 10px 14px; border-radius: 8px; margin: 16px 0; }
+.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; margin: 16px 0; }
+.tile { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; }
+.tile .label { color: var(--muted); font-size: 0.85rem; }
+.tile .value { font-size: 1.5rem; font-weight: 600; font-variant-numeric: tabular-nums; }
+.table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
+table { border-collapse: collapse; width: 100%; font-variant-numeric: tabular-nums; font-size: 0.9rem; }
+th, td { padding: 8px 10px; text-align: right; border-bottom: 1px solid var(--line); white-space: nowrap; }
+th:first-child, td:first-child { text-align: left; }
+th { color: var(--muted); font-weight: 600; }
+tr:last-child td { border-bottom: none; }
+.ci { display: block; color: var(--muted); font-size: 0.78rem; }
+.badge { display: inline-block; font-size: 0.72rem; padding: 1px 7px; border-radius: 999px; margin-left: 6px;
+         border: 1px solid currentColor; color: var(--muted); }
+.badge.small { color: var(--warn-text); background: var(--warn-bg); border-color: transparent; }
+.charts { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 460px), 1fr)); gap: 16px; margin-top: 16px; }
+svg { max-width: 100%; height: auto; }
+.charts svg { width: 100%; }
+figure { margin: 0; min-width: 0; }
+.charts > * { min-width: 0; }
+.findings li { margin: 8px 0; }
+.findings .ids { color: var(--muted); font-size: 0.78rem; }
+.rejected { background: var(--bad-bg); border-radius: 8px; padding: 10px 14px; margin-top: 12px; font-size: 0.9rem; }
+.verified { background: var(--ok-bg); border-radius: 8px; padding: 8px 14px; font-size: 0.85rem; }
+dl { display: grid; grid-template-columns: max-content 1fr; gap: 6px 16px; }
+dt { color: var(--muted); }
+dd { margin: 0; }
+details summary { cursor: pointer; color: var(--accent); }
+.caught { margin-top: 12px; font-size: 0.9rem; }
+</style>
+</head>
+<body>
+<main>
+<header>
+  <h1>{{ title }}</h1>
+  <div class="meta">{{ dataset }} · generated {{ generated }} · EquityPanel {{ version }}</div>
+  <p class="disclaimer"><strong>Auditing aid, not a clinical tool.</strong> This report describes
+  how a model's performance differs between groups. It does not certify a model as fair or safe,
+  and it was run on public or synthetic data only.</p>
+</header>
+
+<section>
+  <h2>Key numbers</h2>
+  <div class="tiles">
+  {% for label, value in key_numbers %}
+    <div class="tile"><div class="label">{{ label }}</div><div class="value">{{ value }}</div></div>
+  {% endfor %}
+  </div>
+  {% if small_groups %}
+  <p class="muted">Small groups (fewer than 30 readmitted or not-readmitted patients; treat their
+  numbers as uncertain): {{ small_groups | join(", ") }}.</p>
+  {% endif %}
+</section>
+
+<section>
+  <h2>Summary</h2>
+  {% if summary is none %}
+  <p class="muted">Summary not generated. The optional plain-English summary needs an Anthropic
+  API key; every number below is computed without it.</p>
+  {% elif summary.error %}
+  <p class="muted">Summary not available: {{ summary.error }}.</p>
+  {% else %}
+  <p class="verified">Written by {{ summary.model }} from the computed numbers only (no patient
+  data). Every number in each finding was checked against the audit's results.</p>
+  <ul class="findings">
+  {% for f in summary.findings %}
+    <li>{{ f.text }} <span class="ids">[{{ f.fact_ids | join(", ") }}]</span></li>
+  {% endfor %}
+  </ul>
+  {% if summary.rejected_final %}
+  <div class="rejected"><strong>{{ summary.rejected_final | length }} finding(s) rejected</strong> by
+  the number check and not shown above:
+    <ul>
+    {% for r in summary.rejected_final %}<li>{{ r.reason }}: “{{ r.text }}”</li>{% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+  {% if summary.rejected_earlier %}
+  <details class="caught">
+    <summary>The number check caught {{ summary.rejected_earlier | length }} finding(s) in an
+    earlier draft; the model was told why and rewrote them</summary>
+    <ul>
+    {% for r in summary.rejected_earlier %}<li>Attempt {{ r.attempt }}: {{ r.reason }}: “{{ r.text }}”</li>{% endfor %}
+    </ul>
+  </details>
+  {% endif %}
+  {% endif %}
+</section>
+
+{% for s in sections %}
+<section id="{{ s.col }}">
+  <h2>By {{ s.title | lower }}</h2>
+  <p class="muted">Each cell shows the estimate and its 95% confidence interval. Gaps are
+  differences from the reference group, <strong>{{ s.reference }}</strong> (the largest).</p>
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th>Group</th><th>Patients</th><th>Readmitted</th>
+      {% for h in headers %}<th>{{ h }}</th>{% endfor %}</tr></thead>
+    <tbody>
+    {% for r in s.rows %}
+      <tr>
+        <td>{{ r.group }}{% if r.is_reference %}<span class="badge">reference</span>{% endif %}{% if r.small %}<span class="badge small">small group</span>{% endif %}</td>
+        <td>{{ r.n }}</td><td>{{ r.n_pos }}</td>
+        {% for c in r.cells %}<td>{{ c.value }}<span class="ci">{{ c.ci }}</span></td>{% endfor %}
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  </div>
+  <h3>Gaps vs {{ s.reference }}</h3>
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th>Group</th>{% for h in headers %}<th>{{ h }}</th>{% endfor %}</tr></thead>
+    <tbody>
+    {% for r in s.rows if not r.is_reference %}
+      <tr><td>{{ r.group }}{% if r.small %}<span class="badge small">small group</span>{% endif %}</td>
+        {% for g in r.gaps %}<td>{{ g }}</td>{% endfor %}</tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  </div>
+  <div class="charts">
+  {% for chart in s.charts %}<figure style="margin:0">{{ chart | safe }}</figure>{% endfor %}
+  </div>
+</section>
+{% endfor %}
+
+{% if egfr %}
+<section id="egfr">
+  <h2>eGFR: race-based (2009) vs race-free (2021) kidney formula</h2>
+  <p class="disclaimer"><strong>{{ egfr.label }}</strong> The direction of the change matches
+  published real-world studies; the sizes do not estimate real prevalence.</p>
+  <p>Until 2021 the standard kidney-function formula (CKD-EPI 2009) multiplied a Black patient's
+  result by 1.159, making their kidneys look healthier. Counts below are patients below each
+  clinical line under 2009 → under 2021.</p>
+  <figure style="margin:0">{{ egfr.chart | safe }}</figure>
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th>Group</th><th>Patients</th><th>Worse stage</th><th>Better stage</th>
+      <th>eGFR &lt; 60 (CKD)</th><th>eGFR &lt; 30 (referral)</th><th>eGFR ≤ 20 (waitlist)</th></tr></thead>
+    <tbody>
+    {% for r in egfr.rows %}
+      <tr><td>{{ r.group }}{% if r.kind == "race" %}<span class="badge">race</span>{% endif %}{% if r.small %}<span class="badge small">small group</span>{% endif %}</td>
+        <td>{{ r.n }}</td><td>{{ r.lower }}</td><td>{{ r.higher }}</td>
+        {% for l in r.lines %}<td>{{ l }}</td>{% endfor %}</tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  </div>
+</section>
+{% endif %}
+
+<section id="methods">
+  <h2>Methods and limitations</h2>
+  <dl>
+    <dt>Flagging rule</dt><dd>A patient is flagged when their risk score is at or above the
+    threshold{% if model_info %} ({{ "%.3f" | format(model_info.threshold) }}, set on training
+    patients to flag about 10%){% endif %}.</dd>
+    <dt>Confidence intervals</dt><dd>95% stratified bootstrap{% if methods.n_boot %}
+    ({{ methods.n_boot }} resamples, seed {{ methods.seed }}){% endif %}: patients are resampled
+    within each group and outcome.</dd>
+    <dt>Reference group</dt><dd>The largest group in each column; gaps are group minus reference.</dd>
+    <dt>Small groups</dt><dd>Flagged, not dropped, when they have fewer than 30 readmitted or
+    fewer than 30 not-readmitted patients.</dd>
+    <dt>Metrics</dt><dd>AUC: how well scores rank readmitted above not-readmitted patients
+    (0.5 = chance). Brier: average squared error of the risk (lower is better). O/E: observed ÷
+    expected readmissions (1 = calibrated; above 1 = risk underestimated). FPR: flagged but not
+    readmitted. FNR: readmitted but not flagged. PPV: flagged patients who were readmitted.</dd>
+    <dt>What this cannot tell you</dt><dd>Why a gap exists, whether the labels themselves are
+    biased (who gets readmitted depends on access to care), or how the model performs on other
+    hospitals' patients. Race, sex and age are audit variables, not model inputs.</dd>
+  </dl>
+  {% if model_info and model_info.top_weights %}
+  <details>
+    <summary>Model inputs with the largest weights</summary>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Feature</th><th>Weight</th></tr></thead>
+      <tbody>{% for w in model_info.top_weights %}<tr><td>{{ w.feature }}</td><td>{{ "%+.3f" | format(w.weight) }}</td></tr>{% endfor %}</tbody>
+    </table></div>
+  </details>
+  {% endif %}
+</section>
+</main>
+</body>
+</html>

@@ -21,7 +21,12 @@ model = [
     "scikit-learn>=1.4",  # the baseline model in equitypanel.model
 ]
 report = [
-    "matplotlib>=3.8",  # charts in equitypanel.reclassification.plot (and the M5 report)
+    "matplotlib>=3.8",  # charts in equitypanel.reclassification.plot and equitypanel.report
+    "jinja2>=3.1",  # the HTML report template (autoescaped)
+]
+llm = [
+    "anthropic>=1.0",  # the optional checked summary in equitypanel.report.summary
+    "python-dotenv>=1.0",  # reads ANTHROPIC_API_KEY from .env in scripts/build_report.py
 ]
 dev = [
     "pytest>=8.0",
@@ -29,6 +34,9 @@ dev = [
     "ruff>=0.6",
     "scikit-learn>=1.4",  # test-only answer key for the hand-written AUC
     "matplotlib>=3.8",  # so the chart tests run in CI
+    "jinja2>=3.1",
+    "anthropic>=1.0",  # tests use a fake client; nothing calls the API
+    "python-dotenv>=1.0",
 ]
 
 [tool.hatch.version]
