@@ -50,6 +50,7 @@ dl { display: grid; grid-template-columns: max-content 1fr; gap: 6px 16px; }
 dt { color: var(--muted); }
 dd { margin: 0; }
 details summary { cursor: pointer; color: var(--accent); }
+.caught { margin-top: 12px; font-size: 0.9rem; }
 </style>
 </head>
 <body>
@@ -90,13 +91,22 @@ details summary { cursor: pointer; color: var(--accent); }
     <li>{{ f.text }} <span class="ids">[{{ f.fact_ids | join(", ") }}]</span></li>
   {% endfor %}
   </ul>
-  {% if summary.rejected %}
-  <div class="rejected"><strong>{{ summary.rejected | length }} finding(s) rejected</strong> by the
-  number check and not shown above:
+  {% if summary.rejected_final %}
+  <div class="rejected"><strong>{{ summary.rejected_final | length }} finding(s) rejected</strong> by
+  the number check and not shown above:
     <ul>
-    {% for r in summary.rejected %}<li>{{ r.reason }}: “{{ r.text }}”</li>{% endfor %}
+    {% for r in summary.rejected_final %}<li>{{ r.reason }}: “{{ r.text }}”</li>{% endfor %}
     </ul>
   </div>
+  {% endif %}
+  {% if summary.rejected_earlier %}
+  <details class="caught">
+    <summary>The number check caught {{ summary.rejected_earlier | length }} finding(s) in an
+    earlier draft; the model was told why and rewrote them</summary>
+    <ul>
+    {% for r in summary.rejected_earlier %}<li>Attempt {{ r.attempt }}: {{ r.reason }}: “{{ r.text }}”</li>{% endfor %}
+    </ul>
+  </details>
   {% endif %}
   {% endif %}
 </section>

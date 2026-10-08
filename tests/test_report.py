@@ -267,7 +267,13 @@ def test_summarise_rejects_invented_number_then_retries_once():
     summary = summarise(FACTS_JSON, client)
     assert summary.attempts == 2
     assert [f.text for f in summary.findings] == [GOOD["text"]]
-    assert [r.reason for r in summary.rejected] == ["91% does not match any cited fact"]
+    # Rejections from both attempts are kept, tagged with the attempt that produced them.
+    assert [(r.attempt, r.reason) for r in summary.rejected] == [
+        (1, "91% does not match any cited fact"),
+        (2, "91% does not match any cited fact"),
+    ]
+    assert [r.attempt for r in summary.rejected_final] == [2]
+    assert [r.attempt for r in summary.rejected_earlier] == [1]
     # The retry tells the model what failed, after its own previous answer.
     feedback = client.calls[1]["messages"]
     assert feedback[1]["role"] == "assistant"
@@ -278,7 +284,30 @@ def test_summarise_retry_can_fix_the_finding():
     client = FakeClient([INVENTED], [GOOD])
     summary = summarise(FACTS_JSON, client)
     assert summary.attempts == 2
-    assert len(summary.findings) == 1 and summary.rejected == []
+    assert len(summary.findings) == 1
+    # Nothing is missing from the final summary, but the caught draft is kept as evidence.
+    assert summary.rejected_final == []
+    assert [(r.attempt, r.text) for r in summary.rejected_earlier] == [(1, INVENTED["text"])]
+
+
+def test_summary_from_old_json_without_attempt():
+    old = {
+        "model": MODEL,
+        "attempts": 1,
+        "error": None,
+        "findings": [],
+        "rejected": [{"text": "x", "reason": "y"}],
+    }
+    assert Summary.from_dict(old).rejected_final[0].attempt == 1
+
+
+def test_report_shows_caught_drafts(audited):
+    metrics, calibration = audited
+    summary = summarise(FACTS_JSON, FakeClient([INVENTED], [GOOD]))
+    html = build_report(metrics, calibration, summary=summary)
+    assert "caught 1 finding(s) in an earlier draft" in " ".join(html.split())
+    assert "Attempt 1: 91% does not match any cited fact" in html
+    assert "finding(s) rejected</strong>" not in html  # nothing missing from the final summary
 
 
 def test_summarise_sends_only_the_facts_json_and_the_right_options():
@@ -379,7 +408,8 @@ def test_report_with_everything(audited, egfr_summary):
     )
     assert "Synthetic patients (Synthea). Not real-world rates." in html
     assert GOOD["text"].replace("'", "&#39;") in html
-    assert "1 finding(s) rejected" in html
+    assert "1 finding(s) rejected</strong>" in html  # final attempt
+    assert "caught 1 finding(s)" in html  # attempt 1, rewritten
     assert "91% does not match any cited fact" in html
     assert "0.712" in html and "20,997" not in html
     assert "30 resamples, seed 0" in html

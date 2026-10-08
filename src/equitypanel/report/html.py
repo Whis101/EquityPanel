@@ -132,7 +132,8 @@ def _summary_context(summary: Summary | None) -> dict | None:
         return None
     return {
         "findings": summary.findings,
-        "rejected": summary.rejected,
+        "rejected_final": summary.rejected_final,
+        "rejected_earlier": summary.rejected_earlier,
         "model": summary.model,
         "attempts": summary.attempts,
         "error": summary.error,

@@ -27,9 +27,12 @@ not a statistician. You receive a JSON object of facts computed by the audit sof
 Write 4 to 8 findings, most important first.
 
 Rules:
-- Use only numbers that appear in the facts. Copy them as given, or as percentages \
-(0.796 -> 79.6%), rounded to at most one decimal place. Do not compute new numbers \
-(no differences, ratios or averages of your own).
+- Use only numbers that appear in the facts. Do not compute new numbers (no differences, \
+ratios or averages of your own).
+- Number style: write rates, shares and their gaps as percentages with one decimal \
+(0.796 -> 79.6%, a gap of -0.026 -> -2.6 percentage points, a CI of 0.0707 to 0.1813 -> \
+7.1 to 18.1 percentage points). Write AUC and observed/expected (O/E) with two decimals \
+(0.6434 -> 0.64). Write counts as whole numbers with thousands commas (20,997).
 - Every finding lists in fact_ids the IDs of all facts whose numbers it uses.
 - Say when a group is flagged small_group: its numbers are uncertain.
 - Mention confidence intervals when two groups' intervals overlap.
@@ -73,6 +76,7 @@ class Finding:
 class Rejected:
     text: str
     reason: str
+    attempt: int = 1  # which attempt produced it; earlier ones were rewritten
 
 
 @dataclass
@@ -83,20 +87,34 @@ class Summary:
     attempts: int = 0
     error: str | None = None
 
+    @property
+    def rejected_final(self) -> list[Rejected]:
+        """Rejected in the last attempt: these findings are missing from the summary."""
+        return [r for r in self.rejected if r.attempt == self.attempts]
+
+    @property
+    def rejected_earlier(self) -> list[Rejected]:
+        """Caught in an earlier attempt and sent back to be rewritten."""
+        return [r for r in self.rejected if r.attempt < self.attempts]
+
     def to_dict(self) -> dict:
         return {
             "model": self.model,
             "attempts": self.attempts,
             "error": self.error,
             "findings": [{"text": f.text, "fact_ids": list(f.fact_ids)} for f in self.findings],
-            "rejected": [{"text": r.text, "reason": r.reason} for r in self.rejected],
+            "rejected": [
+                {"text": r.text, "reason": r.reason, "attempt": r.attempt} for r in self.rejected
+            ],
         }
 
     @classmethod
     def from_dict(cls, data: dict) -> "Summary":
         return cls(
             findings=[Finding(f["text"], tuple(f["fact_ids"])) for f in data["findings"]],
-            rejected=[Rejected(r["text"], r["reason"]) for r in data["rejected"]],
+            rejected=[
+                Rejected(r["text"], r["reason"], r.get("attempt", 1)) for r in data["rejected"]
+            ],
             model=data["model"],
             attempts=data["attempts"],
             error=data["error"],
@@ -191,7 +209,8 @@ def summarise(facts_json: dict, client, *, retries: int = 1) -> Summary:
     """Ask Claude for findings, keep only those that pass check_finding.
 
     If any finding fails, Claude gets one more try (by default) with the reasons.
-    Findings that still fail are returned in Summary.rejected.
+    Summary.rejected keeps the failures of every attempt, tagged with the attempt number:
+    rejected_earlier were rewritten, rejected_final are missing from the summary.
     """
     facts = facts_json["facts"]
     messages = [
@@ -214,8 +233,9 @@ def summarise(facts_json: dict, client, *, retries: int = 1) -> Summary:
             if reason is None:
                 accepted.append(Finding(item["text"], tuple(item["fact_ids"])))
             else:
-                rejected.append(Rejected(item["text"], reason))
-        summary.findings, summary.rejected = accepted, rejected
+                rejected.append(Rejected(item["text"], reason, attempt + 1))
+        summary.findings = accepted
+        summary.rejected += rejected
         if not rejected or attempt == retries:
             return summary
         feedback = "\n".join(f"- {r.text!r}: {r.reason}" for r in rejected)
