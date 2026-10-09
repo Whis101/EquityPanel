@@ -117,6 +117,7 @@ def ci_table(group_col: str, cutoff: float) -> pd.DataFrame:
     table = keep.pivot_table(index="group", columns="metric", values="cell", aggfunc="first")
     table = table.reindex(ordered(table.index))[["auc", "flag_rate", "fnr", "fpr", "ppv"]]
     table.columns = ["AUC", "Flagged", "Missed (FNR)", "False alarms (FPR)", "PPV"]
+    table.index.name = "Group"
     return table
 
 
