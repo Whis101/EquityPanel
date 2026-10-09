@@ -23,6 +23,9 @@ data/raw/
 data/processed/
 outputs/
 *.csv
+# The one data file that is published on purpose: public UCI test-set scores for the
+# Streamlit demo (no patient IDs). Never add real patient data here.
+!demo/data/uci_test_scores.csv
 *.parquet
 
 # Editors / OS

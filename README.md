@@ -6,7 +6,8 @@
 and explains the results in plain English with an optional AI summary whose numbers are
 automatically matched to the computed results (its wording is not checked).**
 
-**[Live audit report](https://whis101.github.io/EquityPanel/)** · **Demo video:** _link added at
+**[Interactive demo](https://equitypanel.streamlit.app/)** · **[Live audit report](https://whis101.github.io/EquityPanel/)** ·
+**Demo video:** _link added at
 submission_ · Built for ForgeHacks Online 2026 (AI + Healthcare track)
 
 > **Intended use: research and education.** EquityPanel produces dataset-level statistics; its
@@ -111,6 +112,7 @@ python scripts/audit_uci.py          # train the baseline model, audit it  -> ou
 python scripts/egfr_synthea.py       # eGFR 2009 vs 2021 on Synthea        -> outputs/
 python scripts/build_report.py       # HTML report  -> outputs/uci_report.html
 python scripts/build_report.py --llm # ... with the checked summary (ANTHROPIC_API_KEY in .env)
+streamlit run demo/app.py            # the interactive demo (needs the [demo] extra)
 ```
 
 **Audit your own model** (needs only numpy + pandas, plus `[report]` for the HTML):
@@ -169,9 +171,11 @@ flowchart LR
 | `equitypanel.metrics` | Per-group metrics, calibration, stratified bootstrap CIs, `audit()` |
 | `equitypanel.model` | Baseline readmission model (scikit-learn, optional `[model]` extra) |
 | `equitypanel.reclassification` | CKD-EPI 2009 and 2021 eGFR, stages, clinical lines, chart |
+| `equitypanel.thresholds` | Threshold sweep: each group's error rates as the flagging cutoff moves |
 | `equitypanel.report` | Facts JSON, checked LLM summary, charts, HTML report |
+| `demo/app.py` | Interactive Streamlit demo on bundled public and synthetic data (no uploads, no AI calls) |
 
-**Quality:** 540 tests (pytest) on Windows and Ubuntu with Python 3.11 and 3.13, Ruff lint and
+**Quality:** 557 tests (pytest) on Windows and Ubuntu with Python 3.11 and 3.13, Ruff lint and
 format checks, and a CI check that fails if any data file or `.env` is committed.
 
 ## Built during ForgeHacks
@@ -183,7 +187,7 @@ tag (Oct 3, 4:29 PM) counts as pre-event work, even though part of it was done a
 started.
 
 **Built during the event:** per-group metrics and bootstrap CIs, the baseline model and UCI
-audit, eGFR reclassification, the HTML report, the checked LLM summary, GitHub Pages hosting and
+audit, eGFR reclassification, the HTML report, the checked LLM summary, GitHub Pages hosting, the threshold sweep and interactive demo, and
 this README. See every change: **[pre-hackathon...main](https://github.com/Whis101/EquityPanel/compare/pre-hackathon...main)**.
 
 ## Limitations and responsible use

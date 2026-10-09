@@ -20,7 +20,9 @@ jobs:
 
       - name: Fail if data files or secrets are tracked
         run: |
-          tracked=$(git ls-files | grep -E '\.(csv|parquet)$|(^|/)\.env$' || true)
+          # demo/data/uci_test_scores.csv is public UCI data published for the demo on purpose.
+          tracked=$(git ls-files | grep -E '\.(csv|parquet)$|(^|/)\.env$' \
+            | grep -vx 'demo/data/uci_test_scores.csv' || true)
           if [ -n "$tracked" ]; then
             echo "::error::Data files or secrets are tracked by git:"
             echo "$tracked"
