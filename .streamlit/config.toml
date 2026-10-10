@@ -1,0 +1,9 @@
+# Light, calm healthcare theme for the demo. Without this, Streamlit follows the viewer's system
+# setting, so judges in dark mode saw a dark app with bright red accents.
+[theme]
+base = "light"
+primaryColor = "#0E7C86"
+backgroundColor = "#FFFFFF"
+secondaryBackgroundColor = "#F1F6F8"
+textColor = "#1F2A37"
+font = "sans serif"
