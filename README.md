@@ -190,6 +190,16 @@ started.
 audit, eGFR reclassification, the HTML report, the checked LLM summary, GitHub Pages hosting, the threshold sweep and interactive demo, and
 this README. See every change: **[pre-hackathon...main](https://github.com/Whis101/EquityPanel/compare/pre-hackathon...main)**.
 
+## What's next
+
+- **Hospital pilot:** one quality team runs EquityPanel on its own readmission model, locally,
+  so patient data never leaves the building.
+- **Groups within groups:** intersectional audits (e.g. race × sex × age, such as Black women
+  under 50), with the same small-group safeguards, since gaps can hide inside averages.
+- **Audit every retrain:** run the audit automatically each time a model is retrained, so new
+  gaps are caught before deployment.
+- **More race-adjusted formulas**, such as pulmonary function tests.
+
 ## Limitations and responsible use
 
 - **The eGFR result uses synthetic patients**, who are far sicker than a real population, so the
