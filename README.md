@@ -7,8 +7,7 @@ and explains the results in plain English with an optional AI summary whose numb
 automatically matched to the computed results (its wording is not checked).**
 
 **[Interactive demo](https://equitypanel.streamlit.app/)** · **[Live audit report](https://whis101.github.io/EquityPanel/)** ·
-**Demo video:** _link added at
-submission_ · Built for ForgeHacks Online 2026 (AI + Healthcare track)
+**[Demo video](https://youtu.be/26k-LwYjqxo)** · Built for ForgeHacks Online 2026 (AI + Healthcare track)
 
 > **Intended use: research and education.** EquityPanel produces dataset-level statistics; its
 > outputs describe groups of patients, not individuals. It is **not medical advice and not a
